@@ -39,12 +39,14 @@ Proyecto de inicio de laravel con Bootstrap.
 
 - [Instalación](#item1)
 - [Inicializar Git](#item2)
+- [Configuración](#item3)
+    - [Configurar Jquery](#item4)
 
 <a name="item1"></a>
 
 ## Instalación
 
-###### Instalación de Laravel
+### Instalación de Laravel
 
 > Typee: en la Consola:
 
@@ -55,8 +57,8 @@ o
 ```console
 laravel new example-app
 ```
-
-**`Nota:` El nombre `example-app` lo cambiamos por el nombre de nuestra aplicación.**
+> [!NOTE]
+> El nombre `example-app` lo cambiamos por el nombre de nuestra aplicación.
 
 [Subir](#top)
 
@@ -70,8 +72,9 @@ laravel new example-app
 git init
 ```
 
-###### Subir Repositorio a GitHub
+### Subir Repositorio a GitHub
 
+> [!IMPORTANT]
 > Accedemos a [github](https://github.com/) y creamos un nuevo repositorio una vez creado copiamos la url de dicho repositorio.
 
 > Typee: en la Consola:
@@ -92,7 +95,8 @@ git config --global user.email "email"
 git config --global user.name "nombre"
 ```
 
-**`Nota:` Si no tenemos agregado el nombre y el email en la configuración de git.**
+> [!TIP]
+>  Este paso es si no tenemos agregado el nombre y el email en la configuración de git.
 
 > Typee: en la Consola:
 
@@ -100,7 +104,8 @@ git config --global user.name "nombre"
 git add .
 ```
 
-**`Nota:` Preparamos los archivos que queremos subir.**
+> [!NOTE]
+> Preparamos los archivos que queremos subir.
 
 > Typee: en la Consola:
 
@@ -108,7 +113,8 @@ git add .
 git commit -m "Instalación del Proyecto"
 ```
 
-**`Nota:` Creamos el Comentario y guardamos los archivo modificados o nuevos de nuestro repositorio en local.**
+> [!NOTE]
+> Creamos el Comentario y guardamos los archivo modificados o nuevos de nuestro repositorio en local.
 
 > Typee: en la Consola:
 
@@ -116,7 +122,35 @@ git commit -m "Instalación del Proyecto"
 git push -f origin master
 ```
 
-**`Nota:` Subimos los archivos o repositorio local al servidor de github.**
+> [!NOTE]
+> Subimos los archivos o repositorio local al servidor de github.
+
+[Subir](#top)
+
+<a name="item3"></a>
+
+## Configuración
+
+<a name="item4"></a>
+
+### Configurar Jquery
+
+> Typee: en la Consola:
+
+```console
+
+npm install jquery
+
+```
+
+> En el archivo `bootstrap.js` añadimos:
+
+```js
+
+import $ from "jquery";
+window.jQuery = window.$ = $;
+
+```
 
 [Subir](#top)
 
