@@ -44,8 +44,9 @@ Proyecto de inicio de laravel con Bootstrap.
     - [Configurar Sass](#item5)
     - [Configurar Bootstrap](#item6)
     - [Configurar Vite](#item7)
-- [Configuración de vistas FrontEnd](#item8)
+- [Sistema de vistas FrontEnd](#item8)
     - [Layout plantilla web](#item9)
+    - [Configuración de las vistas](#item10)
 
 <a name="item1"></a>
 
@@ -251,7 +252,7 @@ export default defineConfig({
 
 <a name="item8"></a>
 
-## Configuración de vistas FrontEnd
+## Sistema de vistas FrontEnd
 
 [Subir](#top)
 
@@ -275,6 +276,24 @@ export default defineConfig({
     @yield('content')
 </body>
 </html>
+```
+
+[Subir](#top)
+
+<a name="item10"></a>
+
+### Configuración de las vistas
+
+> Abrimos el archivo `welcome.blade.php` ubicado en `resources/views/` borramos su contenido y escribimos lo siguiente:
+
+```html
+@extends('layouts.plantilla')
+
+@section('title', 'Welcome')
+
+@section('content')
+    <h1>Welcome</h1>
+@endsection
 ```
 
 [Subir](#top)
