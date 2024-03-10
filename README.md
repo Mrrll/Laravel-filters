@@ -39,11 +39,13 @@ Proyecto de inicio de laravel con Bootstrap.
 
 - [Instalación](#item1)
 - [Inicializar Git](#item2)
-- [Configuración](#item3)
+- [Configuración de librerías FrontEnd](#item3)
     - [Configurar Jquery](#item4)
     - [Configurar Sass](#item5)
     - [Configurar Bootstrap](#item6)
     - [Configurar Vite](#item7)
+- [Configuración de vistas FrontEnd](#item8)
+    - [Layout plantilla web](#item9)
 
 <a name="item1"></a>
 
@@ -133,7 +135,7 @@ git push -f origin master
 
 <a name="item3"></a>
 
-## Configuración
+## Configuración de librerías FrontEnd
 
 <a name="item4"></a>
 
@@ -244,6 +246,36 @@ export default defineConfig({
 
 > [!IMPORTANT]
 > Para que todas las configuraciones funcionen hay que añadir en el head de nuestros html la siguiente instrucción `@vite(['resources/scss/app.scss', 'resources/js/app.js'])` :
+
+[Subir](#top)
+
+<a name="item8"></a>
+
+## Configuración de vistas FrontEnd
+
+[Subir](#top)
+
+<a name="item9"></a>
+
+### Layout plantilla web
+
+> Creamos la carpeta `layouts` en la ubicación `resources\views\` dentro creamos el archivo `plantilla.blade.php` y escribimos lo siguiente .
+
+```html
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title')</title>
+    @vite(['resources/scss/app.scss', 'resources/js/app.js'])
+</head>
+<body class="body">
+    @yield('content')
+</body>
+</html>
+```
 
 [Subir](#top)
 
