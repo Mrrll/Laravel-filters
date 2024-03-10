@@ -47,6 +47,7 @@ Proyecto de inicio de laravel con Bootstrap.
 - [Sistema de vistas FrontEnd](#item8)
     - [Layout plantilla web](#item9)
     - [Configuración de las vistas](#item10)
+    - [Estilos css de las vistas](#item11)
 
 <a name="item1"></a>
 
@@ -292,9 +293,40 @@ export default defineConfig({
 @section('title', 'Welcome')
 
 @section('content')
-    <h1>Welcome</h1>
+    <main class="container-fluid">
+        <h1>Welcome</h1>
+    </main>
 @endsection
 ```
+
+[Subir](#top)
+
+<a name="item11"></a>
+
+### Estilos css de las vistas
+
+> Abrimos el archivo `app.css` ubicado en `resources/css/` y escribimos lo siguiente:
+
+```css
+.center_container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.body {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    'header'
+    'main'
+    'footer';
+  min-height: 100vh;
+}
+```
+
+> [!IMPORTANT]
+> Para que funcionen los estilos hay que cambiar en las configuraciones de bootstrap, accedemos al archivo `_variables.scss` ubicado en `node_modules/bootstrap/scss/` y cambiamos el valor a `$enable-grid-classes: false !default;` y el valor a `$enable-cssgrid: true !default.
 
 [Subir](#top)
 
