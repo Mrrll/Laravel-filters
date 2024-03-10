@@ -53,6 +53,7 @@ Proyecto de inicio de laravel con Bootstrap.
             - [Creación del helper para leer y guardar archivos json](#item14)
             - [Creación del archivo json link_nav](#item15)
             - [Creación del trait LinksNav](#item16)
+            - [Configuración de storage config](#item17)
 
 <a name="item1"></a>
 
@@ -463,6 +464,27 @@ trait LinksNav
 }
 
 ```
+
+[Subir](#top)
+
+<a name="item17"></a>
+
+##### Configuración de storage config
+
+> Abrimos el archivo `filesystems.php` en la ubicación `/config` en la clave `disks` y escribimos:
+
+```php
+'config' => [
+    'driver' => 'local',
+    'root' => storage_path('app/config'),
+    'url' => env('APP_URL') . '/storage',
+    'visibility' => 'private',
+    'throw' => false,
+],
+```
+
+> [!IMPORTANT]
+> Tendremos que configurar la variable `FILESYSTEM_DISK` en local normalmente ya esta configurada por defecto.
 
 [Subir](#top)
 
