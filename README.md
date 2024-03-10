@@ -52,6 +52,7 @@ Proyecto de inicio de laravel con Bootstrap.
         - [Sistema de links para el navegador](#item13)
             - [Creación del helper para leer y guardar archivos json](#item14)
             - [Creación del archivo json link_nav](#item15)
+            - [Creación del trait LinksNav](#item16)
 
 <a name="item1"></a>
 
@@ -438,6 +439,29 @@ composer dump-autoload
         }
     }
 }
+```
+
+[Subir](#top)
+
+<a name="item16"></a>
+
+##### Creación del trait LinksNav
+
+> Creamos la carpeta `Traits` y el archivo `LinksNav.php` en la ubicación `/app/Traits` y escribimos:
+
+```php
+
+<?php
+
+namespace App\Traits;
+
+trait LinksNav
+{
+    public static function Links()  {
+        return read_json("link_nav.json", "config");
+    }
+}
+
 ```
 
 [Subir](#top)
