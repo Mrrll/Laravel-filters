@@ -50,7 +50,8 @@ Proyecto de inicio de laravel con Bootstrap.
     - [Estilos css de las vistas](#item11)
     - [Componente header de navegación](#item12)
         - [Sistema de links para el navegador](#item13)
-            - [Creación del helper par leer y guardar archivos json](#item14)
+            - [Creación del helper para leer y guardar archivos json](#item14)
+            - [Creación del archivo json link_nav](#item15)
 
 <a name="item1"></a>
 
@@ -346,11 +347,9 @@ export default defineConfig({
 
 #### Sistema de links para el navegador
 
-[Subir](#top)
-
 <a name="item14"></a>
 
-##### Creación de helper par leer y guardar archivos json
+##### Creación de helper para leer y guardar archivos json
 
 > Creamos una carpeta llamada `helpers` dentro de nuestra carpeta `app` y también creamos un archivo llamado `helpers.php`.
 
@@ -398,6 +397,48 @@ composer dump-autoload
 
 ```
 
+[Subir](#top)
+
+<a name="item15"></a>
+
+##### Creación del archivo json link_nav
+
+> Creamos la carpeta `config` y el archivo `link_nav.json` en la ubicación `storage/app/config`.
+
+```json
+{
+    "guest" : {
+        "name" : "Welcome",
+        "slug" : "welcome",
+        "type" : "link",
+        "route" : "welcome",
+        "active" : "active disabled",
+        "icono" : "",
+        "icono_color" : "",
+        "class" : "link-menu",
+        "tooltip" : {
+            "position" : "down",
+            "class" : "custom-tooltip",
+            "text" : "Page Welcome"
+        },
+        "items" : {
+            "name" : "Welcome",
+            "slug" : "welcome",
+            "type" : "link",
+            "route" : "welcome",
+            "active" : "active disabled",
+            "icono" : "",
+            "icono_color" : "",
+            "class" : "link-menu",
+            "tooltip" : {
+                "position" : "down",
+                "class" : "custom-tooltip",
+                "text" : "Page Welcome"
+            }
+        }
+    }
+}
+```
 
 [Subir](#top)
 
