@@ -42,7 +42,8 @@ Proyecto de inicio de laravel con Bootstrap.
 - [Configuración](#item3)
     - [Configurar Jquery](#item4)
     - [Configurar Sass](#item5)
-    - [](#item6)
+    - [Configurar Bootstrap](#item6)
+    - [Configurar Vite](#item7)
 
 <a name="item1"></a>
 
@@ -183,7 +184,7 @@ npm install sass --save-dev
 
 [Subir](#top)
 
-<a name="item5"></a>
+<a name="item6"></a>
 
 ### Configurar Bootstrap
 
@@ -211,6 +212,38 @@ npm install bootstrap @popperjs/core
 import * as bootstrap from 'bootstrap'
 
 ```
+
+[Subir](#top)
+
+<a name="item7"></a>
+
+### Configurar Vite
+
+> Abrimos el archivo `vite.config.js` ubicado en la raíz de nuestro proyecto y lo dejamos de esta manera :
+
+```js
+
+import { defineConfig } from 'vite'
+import laravel from 'laravel-vite-plugin'
+import path from 'path'
+
+export default defineConfig({
+  plugins: [
+    laravel({
+      input: ['resources/scss/app.scss', 'resources/js/app.js'],
+      refresh: true,
+    }),
+  ],
+  resolve: {
+    alias: {
+      '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
+    },
+  },
+})
+```
+
+> [!IMPORTANT]
+> Para que todas las configuraciones funcionen hay que añadir en el head de nuestros html la siguiente instrucción `@vite(['resources/scss/app.scss', 'resources/js/app.js'])` :
 
 [Subir](#top)
 
