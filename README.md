@@ -42,6 +42,7 @@ Proyecto de inicio de laravel con Bootstrap.
 - [Configuración](#item3)
     - [Configurar Jquery](#item4)
     - [Configurar Sass](#item5)
+    - [](#item6)
 
 <a name="item1"></a>
 
@@ -177,6 +178,37 @@ npm install sass --save-dev
 ```scss
 
 @import "/resources/css/app.css";
+
+```
+
+[Subir](#top)
+
+<a name="item5"></a>
+
+### Configurar Bootstrap
+
+> Typee: en la Consola:
+
+```console
+
+npm install bootstrap @popperjs/core
+
+```
+
+> [!NOTE]
+> En el archivo que hemos creado [En la configuración de sass](#item4) `app.scss` añadimos:
+
+```scss
+
+@import '~bootstrap/scss/bootstrap';
+
+```
+
+> En el archivo `app.js` que esta ubicado `resources/js/` añadimos:
+
+```js
+
+import * as bootstrap from 'bootstrap'
 
 ```
 
