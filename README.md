@@ -41,6 +41,7 @@ Proyecto de inicio de laravel con Bootstrap.
 - [Inicializar Git](#item2)
 - [Configuración](#item3)
     - [Configurar Jquery](#item4)
+    - [Configurar Sass](#item5)
 
 <a name="item1"></a>
 
@@ -57,6 +58,7 @@ o
 ```console
 laravel new example-app
 ```
+
 > [!NOTE]
 > El nombre `example-app` lo cambiamos por el nombre de nuestra aplicación.
 
@@ -149,6 +151,32 @@ npm install jquery
 
 import $ from "jquery";
 window.jQuery = window.$ = $;
+
+```
+
+> [!NOTE]
+> El archivo `bootstrap.js` esta ubicado en la carpeta `resources/js/`
+
+[Subir](#top)
+
+<a name="item5"></a>
+
+### Configurar Sass
+
+> Typee: en la Consola:
+
+```console
+
+npm install sass --save-dev
+
+```
+
+> [!IMPORTANT]
+> Crear el archivo `app.scss` y la carpeta `scss` en `resources/` y añadimos al archivo `app.scss`:
+
+```scss
+
+@import "/resources/css/app.css";
 
 ```
 
