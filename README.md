@@ -48,6 +48,9 @@ Proyecto de inicio de laravel con Bootstrap.
     - [Layout plantilla web](#item9)
     - [Configuración de las vistas](#item10)
     - [Estilos css de las vistas](#item11)
+    - [Componente header de navegación](#item12)
+        - [Sistema de links para el navegador](#item13)
+            - [Creación del helper par leer y guardar archivos json](#item14)
 
 <a name="item1"></a>
 
@@ -326,7 +329,75 @@ export default defineConfig({
 ```
 
 > [!IMPORTANT]
-> Para que funcionen los estilos hay que cambiar en las configuraciones de bootstrap, accedemos al archivo `_variables.scss` ubicado en `node_modules/bootstrap/scss/` y cambiamos el valor a `$enable-grid-classes: false !default;` y el valor a `$enable-cssgrid: true !default.
+> Para que funcionen los estilos hay que cambiar en las configuraciones de bootstrap, accedemos al archivo `_variables.scss` ubicado en `node_modules/bootstrap/scss/` y cambiamos el valor a `$enable-grid-classes: false !default;` y el valor a `$enable-cssgrid: true !default`.
+
+[Subir](#top)
+
+<a name="item12"></a>
+
+### Componente header de navegación
+
+> [!NOTE]
+> Antes de empezar a crear el componente de navegación, vamos a crear un sistema de links para el navegador, nos servirá para facilitar la creación de nuestra lista de links.
+
+[Subir](#top)
+
+<a name="item13"></a>
+
+#### Sistema de links para el navegador
+
+[Subir](#top)
+
+<a name="item14"></a>
+
+##### Creación de helper par leer y guardar archivos json
+
+> Creamos una carpeta llamada `helpers` dentro de nuestra carpeta `app` y también creamos un archivo llamado `helpers.php`.
+
+```php
+<?php
+
+use Illuminate\Support\Facades\Storage;
+
+
+// Read json
+if (!function_exists('read_json')) {
+    function read_json(String $dir, String $storage = "public"): Json
+    {
+        return Storage::disk($storage)->json($dir);
+    }
+}
+
+// save json
+if (!function_exists('save_json')) {
+    function save_json(String $dir, array $array, String $storage = "public"): Bool
+    {
+        return Storage::disk($storage)->put($dir, json_encode($array));
+    }
+}
+```
+
+> [!IMPORTANT]
+> Abrimos nuestro archivo `composer.json` ubicado en la raíz de nuestro proyecto y actualizar la clave autoload para que nuestro archivo helper sea cargado correctamente por Composer.
+
+> Añadimos el siguiente código en la clave `autoload` debajo de `psr-4`
+
+```json
+
+"files": [
+    "app/helpers/helpers.php"
+]
+
+```
+
+> Typee: en la Consola:
+
+```console
+
+composer dump-autoload
+
+```
+
 
 [Subir](#top)
 
