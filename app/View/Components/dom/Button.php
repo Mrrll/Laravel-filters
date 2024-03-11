@@ -8,42 +8,21 @@ use Illuminate\View\Component;
 
 class Button extends Component
 {
-    public
-        $type,
-        $class,
-        $route,
-        $name,
-        $tooltip,
-        $id,
-        $position,
-        $form,
-        $checked,
-        $value;
+
     /**
      * Create a new component instance.
      */
     public function __construct(
-        $type = 'button',
-        $class = null,
-        $route = null,
-        $name = null,
-        $tooltip = null,
-        $id = null,
-        $position = null,
-        $form = null,
-        $checked = null,
-        $value = null
+        public String $type = 'button',
+        public String|Null $class = null,
+        public String|Null $route = null,
+        public String|Null $name = null,
+        public array|Null $tooltip = null,
+        public String|Null $id = null,
+        public String|Null $position = null,
+        public String|Null $form = null,
     ) {
-        $this->type = $type;
-        $this->class = $class;
-        $this->route = $route;
-        $this->name = $name;
-        $this->tooltip = $tooltip;
-        $this->id = $id;
-        $this->position = $position;
-        $this->form = $form;
-        $this->checked = $checked;
-        $this->value = $value;
+        // Code ...
     }
 
     /**

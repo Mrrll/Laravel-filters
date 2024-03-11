@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Storage;
 
 // Read json
 if (!function_exists('read_json')) {
-    function read_json(String $dir, String $storage = "public"): Json
+    function read_json(String $dir, String $storage = "public"): Array
     {
         return Storage::disk($storage)->json($dir);
     }
