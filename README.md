@@ -54,6 +54,7 @@ Proyecto de inicio de laravel con Bootstrap.
             - [Creación del archivo json link_nav](#item15)
             - [Creación del trait LinksNav](#item16)
             - [Configuración de storage config](#item17)
+            - [Creación del componente button](#item18)
 
 <a name="item1"></a>
 
@@ -485,6 +486,244 @@ trait LinksNav
 
 > [!IMPORTANT]
 > Tendremos que configurar la variable `FILESYSTEM_DISK` en local normalmente ya esta configurada por defecto.
+
+[Subir](#top)
+
+<a name="item18"></a>
+
+##### Creación del componente button
+
+> Typee: en la Consola:
+
+```console
+
+php artisan make:component dom/Button
+
+```
+
+> Abrimos el archivo `Button.php` en la ubicación `app/View/Components/dom/` y escribimos:
+
+```php
+    public
+        $type,
+        $class,
+        $route,
+        $name,
+        $tooltip,
+        $id,
+        $position,
+        $form,
+        $checked,
+        $value;
+    /**
+     * Create a new component instance.
+     */
+    public function __construct(
+        $type = 'button',
+        $class = null,
+        $route = null,
+        $name = null,
+        $tooltip = null,
+        $id = null,
+        $position = null,
+        $form = null,
+        $checked = null,
+        $value = null
+    ) {
+        $this->type = $type;
+        $this->class = $class;
+        $this->route = $route;
+        $this->name = $name;
+        $this->tooltip = $tooltip;
+        $this->id = $id;
+        $this->position = $position;
+        $this->form = $form;
+        $this->checked = $checked;
+        $this->value = $value;
+    }
+```
+
+> Abrimos el archivo `button.blade.php` en la ubicación `resources/view/components/dom/` y escribimos:
+
+```html
+@switch($type)
+    @case('link')
+        @if ($tooltip != null && $tooltip != '')
+            @php
+                $text = trans($tooltip['text'])
+            @endphp
+        @endif
+        <a href="{{$route ?? '#'}}" {{ $attributes->merge(['class' => "$class"]) }} id="{{$id ?? ''}}"
+            @isset($tooltip)
+
+                @if ($tooltip != null && $tooltip != '')
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="{{$tooltip['position']}}"
+                    @isset($tooltip['class'])
+                        data-bs-custom-class="{{$tooltip['class']}}"
+                    @endisset
+                    data-bs-title="{{$text}}"
+                @endif
+            @endisset
+            > {{$slot}} </a>
+        @break
+    @case('modal')
+        @if ($tooltip != null && $tooltip != '')
+            @php
+                $text = trans($tooltip['text'])
+            @endphp
+            <button type="button" {{ $attributes->merge(['class' => "btn $class"]) }} onclick="OpenModal('#{{$name}}')" id="{{$id ?? ''}}"
+                @isset($tooltip)
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="{{$tooltip['position']}}"
+                    @isset($tooltip['class'])
+                        data-bs-custom-class="{{$tooltip['class']}}"
+                    @endisset
+                    data-bs-title="{{$text}}"
+                @endisset
+                >
+                {{$slot}}
+            </button>
+        @else
+            <button type="button" {{ $attributes->merge(['class' => "btn $class"]) }} data-bs-toggle="modal" data-bs-target="#{{$name}}" id="{{$id ?? ''}}">
+                {{$slot}}
+            </button>
+        @endif
+        @break
+    @case('closemodal')
+        @if ($tooltip != null && $tooltip != '')
+            @php
+                $text = trans($tooltip['text'])
+            @endphp
+        @endif
+        <button type="button" {{ $attributes->merge(['class' => "$class"]) }} data-bs-dismiss="modal" id="{{$id ?? ''}}"
+            @isset($tooltip)
+                @if ($tooltip != null && $tooltip != '')
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="{{$tooltip['position']}}"
+                    @isset($tooltip['class'])
+                        data-bs-custom-class="{{$tooltip['class']}}"
+                    @endisset
+                    data-bs-title="{{$text}}"
+                @endif
+            @endisset
+            >
+            {{$slot}}
+        </button>
+        @break
+    @case('dropdown')
+        <a {{ $attributes->merge(['class' => "dropdown-toggle $class"]) }} data-bs-toggle="dropdown" aria-expanded="false" id="{{$id ?? ''}}">
+            {{$slot}}
+        </a>
+        @break
+    @case('dropdown_noclass')
+    @if ($tooltip != null && $tooltip != '')
+            @php
+                $text = trans($tooltip['text'])
+            @endphp
+        @endif
+        <div data-bs-toggle="dropdown" aria-expanded="false" style="display: initial;">
+
+                <button {{ $attributes->merge(['class' => "$class"]) }}  id="labelclik" @isset($tooltip) class="btn btn-options"
+                    @if ($tooltip != null && $tooltip != '')
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="{{$tooltip['position']}}"
+                        @isset($tooltip['class'])
+                            data-bs-custom-class="{{$tooltip['class']}}"
+                        @endisset
+                        data-bs-title="{{$text}}"
+                    @endif
+                    @endisset>
+                    {{$slot}}
+
+                </button>
+        </div>
+        @break
+    @case('collapse')
+        <a {{ $attributes->merge(['class' => "$class"]) }} data-bs-toggle="collapse" href="#{{$name}}" role="button" aria-expanded="false" aria-controls="{{$name}}" id="{{$id ?? ''}}">
+            {{$slot}}
+        </a>
+        @break
+    @case('checkbox')
+        <input {{ $attributes->merge(['class' => "$class"]) }} type="{{$type}}" id="{{$id ?? ''}}"/>
+        <label for="{{$id ?? ''}}">
+            {{$slot}}
+        </label>
+        @break
+    @case('checkbox-icon')
+        @if ($tooltip != null && $tooltip != '')
+            @php
+                $text = trans($tooltip['text'])
+            @endphp
+            <input  type="{{$type}}" id="{{$id ?? ''}}" name="{{$id ?? ''}}" class="d-none" />
+            <label {{ $attributes->merge(['class' => "$class"]) }} for="{{$id ?? ''}}" @isset($tooltip)
+                @if ($tooltip != null && $tooltip != '')
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="{{$tooltip['position']}}"
+                    @isset($tooltip['class'])
+                        data-bs-custom-class="{{$tooltip['class']}}"
+                    @endisset
+                    data-bs-title="{{$text}}"
+                @endif
+            @endisset>
+                {{$slot}}
+            </label>
+        @else
+            <input  type="{{$type}}" id="{{$id ?? ''}}" name="{{$id ?? ''}}" class="d-none"/>
+            <label {{ $attributes->merge(['class' => "$class"]) }} for="{{$id ?? ''}}">
+                {{$slot}}
+            </label>
+        @endif
+        @break
+    @case('radio-icon-group')
+            @if ($tooltip != null && $tooltip != '')
+                @php
+                    $text = trans($tooltip['text'])
+                @endphp
+            @endif
+            <label for="{{$id}}" @isset($tooltip)
+            @if ($tooltip != null && $tooltip != '')
+                data-bs-toggle="tooltip"
+                data-bs-placement="{{$tooltip['position']}}"
+                @isset($tooltip['class'])
+                    data-bs-custom-class="{{$tooltip['class']}}"
+                @endisset
+                data-bs-title="{{$text}}"
+            @endif
+        @endisset>
+                <input type="radio" name="{{$name}}" id="{{$id}}" class="d-none" value="{{$value}}"
+                    onchange="buttonChangeRadio('{{$id}}')" @checked($checked)
+                     />
+                     <span {{ $attributes->merge(['class' => "btn $class"]) }} id="{{$id}}_span">
+                         {{$slot}}
+                    </span>
+            </label>
+        @break
+    @default
+    @if ($tooltip != null && $tooltip != '')
+        @php
+            $text = trans($tooltip['text'])
+        @endphp
+    @endif
+    <button type="{{$type}}" {{ $attributes->merge(['class' => "btn $class"]) }} id="{{$id ?? ''}}"
+        @isset($form)
+            form="{{$form}}"
+        @endisset
+        @isset($tooltip)
+            @if ($tooltip != null && $tooltip != '')
+                data-bs-toggle="tooltip"
+                data-bs-placement="{{$tooltip['position']}}"
+                @isset($tooltip['class'])
+                    data-bs-custom-class="{{$tooltip['class']}}"
+                @endisset
+                data-bs-title="{{$text}}"
+            @endif
+        @endisset
+        >
+        {{$slot}}
+    </button>
+@endswitch
+```
 
 [Subir](#top)
 
