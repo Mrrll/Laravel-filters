@@ -58,6 +58,7 @@ Proyecto de inicio de laravel con Bootstrap.
             - [Creación del componente structure recursive](#item19)
             - [Creación del componente links](#item20)
         - [Creación del componente header](#item21)
+    - [Componente footer](#item22)
 
 <a name="item1"></a>
 
@@ -255,6 +256,21 @@ window.Popper = Popper;
 
 ```
 
+> Abrimos el archivo `AppServiceProvider.php` de la carpeta `app\Providers\AppServiceProvider.php` y dentro del `boot` escribimos lo siguiente.
+
+```php
+
+Paginator::useBootstrap();
+
+```
+
+> Y importamos la clase `Paginator`.
+
+```php
+
+use Illuminate\Pagination\Paginator;
+
+```
 
 [Subir](#top)
 
@@ -586,7 +602,7 @@ php artisan make:component dom.Button
                 @endif
             @endisset>
             {{-- <x-slot:title>
-                Esto es el titulo del boton
+                Esto es el titulo del botón
             </x-slot:title> --}}
             {{ $title }}
         </button>
@@ -805,6 +821,42 @@ php artisan make:component layouts.header --view
 ```
 
 [Subir](#top)
+
+<a name="item22"></a>
+
+### Componente footer
+
+> Typee: en la Consola:
+
+```console
+
+php artisan make:component layouts.footer --view
+
+```
+
+> Abrir el archivo `footer.blade.php` en la ubicación `resources/views/components/layouts/`
+
+```html
+
+<footer class="bg-light text-center text-lg-start border-top footer-dashboard">
+  <div class="text-center p-3 bg-body-tertiary">
+    © {{ date('Y') }} <a href="{{config('app.url')}}">{{config('app.name')}}</a>. @lang('All rights reserved.')
+  </div>
+</footer>
+
+```
+
+> Abrimos el archivo `plantilla.blade.php` ubicado en `resources/views/layouts/` añadimos el componente header
+
+```html
+
+<body class="body">
+    <x-layouts.header />
+    @yield('content')
+    <x-layouts.footer />
+</body>
+
+```
 
 >Pues eso es todo espero que sirva. 👍
 

@@ -10,5 +10,6 @@
 <body class="body">
     <x-layouts.header />
     @yield('content')
+    <x-layouts.footer />
 </body>
 </html>
