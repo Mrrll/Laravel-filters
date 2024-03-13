@@ -1,31 +1,30 @@
-<ol class="navbar-nav">
-    @foreach ($links as $key => $buttons)
-        @if ($key == $name)
-            <li class="nav-item">
-                @foreach ($buttons as $button)
+@foreach ($links as $link => $buttons)
+    @if ($link == $name)
+        <ol class="navbar-nav">
+            @foreach ($buttons as $button)
+                <li class="nav-item">
                     <x-dom.button
-                        :type="$button['type']"
-                        :class="request()->routeIs($button['route'])
-                            ? $button['class'] . ' active disabled'
-                            : $button['class']"
-                        :id="$button['slug']"
-                        :route="route($button['route'])">
-                            @if (isset($button['icon']))
-                                @switch($button['icon']['type'])
-                                    @case('view')
-                                        {{ view($button['icon']['name']) }}
-                                    @break
-                                    @case('componet')
-                                        {{ $button['icon']['name'] }}
-                                    @break
-                                        <i class="{{ $button['icon']['name'] }}" style="color:{{ $button['icon']['color']}}"></i>
-                                    @default
-                                @endswitch
-                            @endif
-                            @lang($button['name'])
+                    :type="$button['type']"
+                    :id="$button['slug']"
+                    :class="(isset($button['route']) && request()->routeIs($button['route']) ? $button['class']. ' active disabled' : $button['class'])"
+                    :route="(isset($button['route'])) ? $button['route'] : ''"
+                    :position="(isset($button['position'])) ? $button['position'] : ''">
+                        @if ($button['type'] == 'dropdown')
+                            <x-slot:title>
+                                {{ $button['name'] }}
+                            </x-slot:title>
+                        @else
+                            {{ $button['name'] }}
+                        @endif
+
+                        @if (isset($button['items']))
+                            <ul class="dropdown-menu">
+                                <x-nav.partials.structure :items="$button['items']" />
+                            </ul>
+                        @endif
                     </x-dom.button>
-                @endforeach
-            </li>
-        @endif
-    @endforeach
-</ol>
+                </li>
+            @endforeach
+        </ol>
+    @endif
+@endforeach

@@ -8,6 +8,7 @@
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
 </head>
 <body class="body">
+    <x-layouts.header />
     @yield('content')
 </body>
 </html>

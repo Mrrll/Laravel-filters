@@ -55,7 +55,9 @@ Proyecto de inicio de laravel con Bootstrap.
             - [Creación del trait LinksNav](#item16)
             - [Configuración de storage config](#item17)
             - [Creación del componente button](#item18)
-            - [Creación del componente links](#item19)
+            - [Creación del componente structure recursive](#item19)
+            - [Creación del componente links](#item20)
+        - [Creación del componente header](#item21)
 
 <a name="item1"></a>
 
@@ -508,7 +510,7 @@ trait LinksNav
 
 ```console
 
-php artisan make:component dom/Button
+php artisan make:component dom.Button
 
 ```
 
@@ -544,7 +546,7 @@ php artisan make:component dom/Button
                     @isset($tooltip['class'])
                         data-bs-custom-class="{{ $tooltip['class'] }}"
                     @endisset
-                data-bs-title="@lang($tooltip['text'])"
+                    data-bs-title="@lang($tooltip['text'])"
                 @endif
             @endisset
         > {{ $slot }} </a>
@@ -562,39 +564,17 @@ php artisan make:component dom/Button
                     @isset($tooltip['class'])
                         data-bs-custom-class="{{ $tooltip['class'] }}"
                     @endisset
-                    data-bs-title="@lang( $tooltip['text'])"
+                    data-bs-title="@lang($tooltip['text'])"
                 @endif
-            @endisset
-        >
+            @endisset>
             {{ $slot }}
         </button>
     @break
 
     @case('dropdown')
-        <div class="{{ $position }}">
-            <button type="button" {{ $attributes->merge(['class' => "dropdown-toggle btn $class"]) }} id="{{ $id ?? '' }}" data-bs-toggle="dropdown" aria-expanded="false"
-                @isset($tooltip)
-                    @if ($tooltip != null && $tooltip != '')
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="{{ $tooltip['position'] }}"
-                        @isset($tooltip['class'])
-                            data-bs-custom-class="{{ $tooltip['class'] }}"
-                        @endisset
-                        data-bs-title="@lang($tooltip['text'])"
-                    @endif
-                @endisset
-            >
-                {{ $title }}
-            </button>
-            {{ $slot }}
-        </div>
-    @break
-
-    @default
-        <button type="button" {{ $attributes->merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}"
-            @isset($route)
-                onclick="{{ $route }}"
-            @endisset
+    <div class="{{ $position }}">
+        <button type="button" {{ $attributes->merge(['class' => "dropdown-toggle btn $class"]) }} id="{{ $id ?? '' }}"
+            data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
             @isset($tooltip)
                 @if ($tooltip != null && $tooltip != '')
                     data-bs-toggle="tooltip"
@@ -604,10 +584,33 @@ php artisan make:component dom/Button
                     @endisset
                     data-bs-title="@lang($tooltip['text'])"
                 @endif
-            @endisset
-        >
-        {{ $slot }}
+            @endisset>
+            {{-- <x-slot:title>
+                Esto es el titulo del boton
+            </x-slot:title> --}}
+            {{ $title }}
         </button>
+        {{ $slot }}
+    </div>
+    @break
+
+    @default
+    <button type="button" {{ $attributes->merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}"
+        @isset($route)
+            onclick="{{ $route }}"
+        @endisset
+    @isset($tooltip)
+        @if ($tooltip != null && $tooltip != '')
+            data-bs-toggle="tooltip"
+            data-bs-placement="{{ $tooltip['position'] }}"
+            @isset($tooltip['class'])
+                data-bs-custom-class="{{ $tooltip['class'] }}"
+            @endisset
+            data-bs-title="@lang($tooltip['text'])"
+        @endif
+    @endisset>
+        {{ $slot }}
+    </button>
 @endswitch
 
 ```
@@ -619,13 +622,60 @@ php artisan make:component dom/Button
 
 <a name="item19"></a>
 
+##### Creación del componente structure recursive
+
+> [!TIP]
+> Este componente lo creamos con la intención de recorrer infinitamente el array multidimensional, que hemos generado en el archivo `link_nav.json`.
+
+```console
+
+php artisan make:component nav.partials.structure --view
+
+```
+
+> Abrimos el archivo `structure.blade.php` ubicado `resources/views/components/nav/partials/` y escribimos:
+
+```html
+
+@props(['items'])
+@foreach ($items as $item)
+    <li class="nav-item">
+        <x-dom.button
+        :type="$item['type']"
+        :id="$item['slug']"
+        :class="(isset($item['route']) && request()->routeIs($item['route']) ? $item['class']. ' active disabled' : $item['class'])"
+        :route="(isset($item['route'])) ? $item['route'] : null"
+        :position="(isset($item['position'])) ? $item['position'] : ''">
+            @if ($item['type'] == 'dropdown')
+                <x-slot:title>
+                    {{ $item['name'] }}
+                </x-slot:title>
+            @else
+                {{ $item['name'] }}
+            @endif
+
+            @if (isset($item['items']))
+                <ul class="dropdown-menu">
+                    <x-nav.partials.structure :items="$item['items']" />
+                </ul>
+            @endif
+        </x-dom.button>
+    </li>
+@endforeach
+
+```
+
+[Subir](#top)
+
+<a name="item20"></a>
+
 ##### Creación del componente links
 
 > Typee: en la Consola:
 
 ```console
 
-php artisan make:component nav/Links
+php artisan make:component nav.Links
 
 ```
 
@@ -655,38 +705,102 @@ public function __construct(
 
 ```html
 
-<ol class="navbar-nav">
-    @foreach ($links as $key => $buttons)
-        @if ($key == $name)
-            <li class="nav-item">
-                @foreach ($buttons as $button)
+@foreach ($links as $link => $buttons)
+    @if ($link == $name)
+        <ol class="navbar-nav">
+            @foreach ($buttons as $button)
+                <li class="nav-item">
                     <x-dom.button
-                        :type="$button['type']"
-                        :class="request()->routeIs($button['route'])
-                            ? $button['class'] . ' active disabled'
-                            : $button['class']"
-                        :id="$button['slug']"
-                        :route="route($button['route'])">
-                            @if (isset($button['icon']))
-                                @switch($button['icon']['type'])
-                                    @case('view')
-                                        {{ view($button['icon']['name']) }}
-                                    @break
-                                    @case('componet')
-                                        {{ $button['icon']['name'] }}
-                                    @break
-                                        <i class="{{ $button['icon']['name'] }}" style="color:{{ $button['icon']['color']}}"></i>
-                                    @default
-                                @endswitch
-                            @endif
-                            @lang($button['name'])
-                    </x-dom.button>
-                @endforeach
-            </li>
-        @endif
-    @endforeach
-</ol>
+                    :type="$button['type']"
+                    :id="$button['slug']"
+                    :class="(isset($button['route']) && request()->routeIs($button['route']) ? $button['class']. ' active disabled' : $button['class'])"
+                    :route="(isset($button['route'])) ? $button['route'] : ''"
+                    :position="(isset($button['position'])) ? $button['position'] : ''">
+                        @if ($button['type'] == 'dropdown')
+                            <x-slot:title>
+                                {{ $button['name'] }}
+                            </x-slot:title>
+                        @else
+                            {{ $button['name'] }}
+                        @endif
 
+                        @if (isset($button['items']))
+                            <ul class="dropdown-menu">
+                                <x-nav.partials.structure :items="$button['items']" />
+                            </ul>
+                        @endif
+                    </x-dom.button>
+                </li>
+            @endforeach
+        </ol>
+    @endif
+@endforeach
+
+```
+
+[Subir](#top)
+
+<a name="item21"></a>
+
+#### Creación del componente header
+
+> Typee: en la Consola:
+
+```console
+
+php artisan make:component layouts.header --view
+
+```
+
+> Abrimos el archivo `header.blade.php` en la ubicación `resources/view/components/layouts/` y escribimos:
+
+```html
+
+<header class="bg-light border-bottom">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand">{{ env('APP_NAME') }}</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+                <x-nav.links name="guest" />
+            </div>
+        </div>
+    </nav>
+</header>
+
+```
+
+> [!WARNING]
+> He creado una regla css para modificar el posicionamiento del menu desplegable por el botón dropdown de bootstrap ya que este tiene un atributo `data-bs-offset` para poder posicionar el menu, pero por alguna razón la clase `navbar` bloquea. Lo he posicionado a la altura del menu de navegación.
+
+> Creamos el archivo `header.scss` ubicado en `resources/scss/` y escribimos:
+
+```scss
+
+#navbarNav  {
+    div.dropdown {
+        .dropdown-menu[data-bs-popper] {
+            margin-top: 8px !important;
+        }
+    }
+}
+
+```
+
+> [!IMPORTANT]
+> Tenemos que `@import"header";` en el archivo `app.scss` para que nuestro proyecto lo procese.
+
+> Abrimos el archivo `plantilla.blade.php` ubicado en `resources/views/layouts/` añadimos el componente header
+
+```html
+
+<body class="body">
+    <x-layouts.header />
+    @yield('content')
+</body>
 
 ```
 

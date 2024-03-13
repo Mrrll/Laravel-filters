@@ -10,33 +10,34 @@ namespace App\Traits;
  *  "slug": "welcome",
  *  "type": "link",
  *  "route": "welcome",
- *  "active": "active disabled",
+ *  "class": "nav-link",
  *  "icon": {
  *      "type" : "i",
  *      "name" : "fa-solid fa-magnifying-glass fa-2xl"
  *      "color": "#FFD43B"
  * },
- *  "class": "link-menu",
  *  "tooltip": {
  *      "position": "down",
  *      "class": "custom-tooltip",
  *      "text": "Page Welcome"
  *  },
  *  "items": {
- *      "name": "Welcome",
- *      "slug": "welcome",
- *      "type": "link",
- *      "route": "welcome",
+ *      "welcome : {
+ *          "name": "Welcome",
+ *          "slug": "welcome",
+ *          "type": "link",
+ *          "route": "welcome",
+ *          "class": "nav-link",
  *          "icon": {
- *          "type" : "i",
- *          "name" : "fa-solid fa-magnifying-glass fa-2xl"
- *          "color": "#FFD43B"
- *      }
- *      "class": "link-menu",
- *      "tooltip": {
- *          "position": "down",
- *          "class": "custom-tooltip",
- *          "text": "Page Welcome"
+ *              "type" : "i",
+ *              "name" : "fa-solid fa-magnifying-glass fa-2xl"
+ *              "color": "#FFD43B"
+ *          }
+ *          "tooltip": {
+ *              "position": "down",
+ *              "class": "custom-tooltip",
+ *              "text": "Page Welcome"
+ *          }
  *      }
  *  }
  *
