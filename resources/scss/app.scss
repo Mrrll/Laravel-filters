@@ -1,4 +1,5 @@
 @import '~bootstrap/scss/bootstrap';
-@import "/resources/css/app.css";
+@import "/resources/css/app";
 @import 'jquery-ui/dist/themes/base/jquery-ui.css';
-@import 'header.scss';
+@import 'header';
+@import 'toasts';

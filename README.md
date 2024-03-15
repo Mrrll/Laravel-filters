@@ -4,12 +4,12 @@ Proyecto de inicio de laravel con Bootstrap.
 
 ## Requisitos
 
-- [PHP8^|"Xammp"](https://www.apachefriends.org/es/download.html).
-- [Composer](https://getcomposer.org/).
-- [Node.js](https://nodejs.org/).
-- [Npm](https://docs.npmjs.com/).
-- [Git](https://git-scm.com/).
-- [Laravel](https://laravel.com/docs/10.x).
+-   [PHP8^|"Xammp"](https://www.apachefriends.org/es/download.html).
+-   [Composer](https://getcomposer.org/).
+-   [Node.js](https://nodejs.org/).
+-   [Npm](https://docs.npmjs.com/).
+-   [Git](https://git-scm.com/).
+-   [Laravel](https://laravel.com/docs/10.x).
 
 ###### Problemas/Soluciones
 
@@ -37,29 +37,30 @@ Proyecto de inicio de laravel con Bootstrap.
 
 ## Indice de Contenidos.
 
-- [Instalación](#item1)
-- [Inicializar Git](#item2)
-- [Configuración de librerías FrontEnd](#item3)
-    - [Configurar Jquery y Jquery-UI](#item4)
-    - [Configurar Sass](#item5)
-    - [Configurar Bootstrap](#item6)
-    - [Configurar Vite](#item7)
-- [Sistema de vistas FrontEnd](#item8)
-    - [Layout plantilla web](#item9)
-    - [Configuración de las vistas](#item10)
-    - [Estilos css de las vistas](#item11)
-    - [Componente header de navegación](#item12)
-        - [Sistema de links para el navegador](#item13)
-            - [Creación del helper para leer y guardar archivos json](#item14)
-            - [Creación del archivo json link_nav](#item15)
-            - [Creación del trait LinksNav](#item16)
-            - [Configuración de storage config](#item17)
-            - [Creación del componente button](#item18)
-            - [Creación del componente structure recursive](#item19)
-            - [Creación del componente links](#item20)
-        - [Creación del componente header](#item21)
-    - [Componente footer](#item22)
-    - [Componente alert](#item23)
+-   [Instalación](#item1)
+-   [Inicializar Git](#item2)
+-   [Configuración de librerías FrontEnd](#item3)
+    -   [Configurar Jquery y Jquery-UI](#item4)
+    -   [Configurar Sass](#item5)
+    -   [Configurar Bootstrap](#item6)
+    -   [Configurar Vite](#item7)
+-   [Sistema de vistas FrontEnd](#item8)
+    -   [Layout plantilla web](#item9)
+    -   [Configuración de las vistas](#item10)
+    -   [Estilos css de las vistas](#item11)
+    -   [Componente header de navegación](#item12)
+        -   [Sistema de links para el navegador](#item13)
+            -   [Creación del helper para leer y guardar archivos json](#item14)
+            -   [Creación del archivo json link_nav](#item15)
+            -   [Creación del trait LinksNav](#item16)
+            -   [Configuración de storage config](#item17)
+            -   [Creación del componente button](#item18)
+            -   [Creación del componente structure recursive](#item19)
+            -   [Creación del componente links](#item20)
+        -   [Creación del componente header](#item21)
+    -   [Componente footer](#item22)
+    -   [Componente alert](#item23)
+    -   [Componente toasts](#item24)
 
 <a name="item1"></a>
 
@@ -72,7 +73,9 @@ Proyecto de inicio de laravel con Bootstrap.
 ```console
 composer create-project laravel/laravel example-app
 ```
+
 o
+
 ```console
 laravel new example-app
 ```
@@ -116,7 +119,7 @@ git config --global user.name "nombre"
 ```
 
 > [!TIP]
->  Este paso es si no tenemos agregado el nombre y el email en la configuración de git.
+> Este paso es si no tenemos agregado el nombre y el email en la configuración de git.
 
 > Typee: en la Consola:
 
@@ -174,10 +177,8 @@ npm i jquery-ui
 > En el archivo `bootstrap.js` añadimos:
 
 ```js
-
 import $ from "jquery";
 window.jQuery = window.$ = $;
-
 ```
 
 > [!NOTE]
@@ -201,9 +202,7 @@ npm install sass --save-dev
 > Crear el archivo `app.scss` y la carpeta `scss` en `resources/` y añadimos al archivo `app.scss`:
 
 ```scss
-
 @import "/resources/css/app.css";
-
 ```
 
 [Subir](#top)
@@ -224,11 +223,9 @@ npm install bootstrap @popperjs/core
 > En el archivo que hemos creado [En la configuración de sass](#item4) `app.scss` añadimos:
 
 ```scss
+@import "~bootstrap/scss/bootstrap";
 
-@import '~bootstrap/scss/bootstrap';
-
-@import 'jquery-ui/dist/themes/base/jquery-ui.css';
-
+@import "jquery-ui/dist/themes/base/jquery-ui.css";
 ```
 
 > [!NOTE]
@@ -237,12 +234,10 @@ npm install bootstrap @popperjs/core
 > En el archivo `app.js` que esta ubicado `resources/js/` añadimos:
 
 ```js
-
-import * as bootstrap from 'bootstrap'
+import * as bootstrap from "bootstrap";
 window.bootstrap = bootstrap;
 
 import "jquery-ui/dist/jquery-ui";
-
 ```
 
 > [!NOTE]
@@ -251,10 +246,8 @@ import "jquery-ui/dist/jquery-ui";
 > En el archivo `bootstrap.js` añadimos:
 
 ```js
-
 import * as Popper from "@popperjs/core";
 window.Popper = Popper;
-
 ```
 
 > Abrimos el archivo `AppServiceProvider.php` de la carpeta `app\Providers\AppServiceProvider.php` y dentro del `boot` escribimos lo siguiente.
@@ -282,24 +275,23 @@ use Illuminate\Pagination\Paginator;
 > Abrimos el archivo `vite.config.js` ubicado en la raíz de nuestro proyecto y lo dejamos de esta manera :
 
 ```js
-
-import { defineConfig } from 'vite'
-import laravel from 'laravel-vite-plugin'
-import path from 'path'
+import { defineConfig } from "vite";
+import laravel from "laravel-vite-plugin";
+import path from "path";
 
 export default defineConfig({
-  plugins: [
-    laravel({
-      input: ['resources/scss/app.scss', 'resources/js/app.js'],
-      refresh: true,
-    }),
-  ],
-  resolve: {
-    alias: {
-      '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
+    plugins: [
+        laravel({
+            input: ["resources/scss/app.scss", "resources/js/app.js"],
+            refresh: true,
+        }),
+    ],
+    resolve: {
+        alias: {
+            "~bootstrap": path.resolve(__dirname, "node_modules/bootstrap"),
+        },
     },
-  },
-})
+});
 ```
 
 > [!IMPORTANT]
@@ -322,16 +314,16 @@ export default defineConfig({
 ```html
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title')</title>
-    @vite(['resources/scss/app.scss', 'resources/js/app.js'])
-</head>
-<body class="body">
-    @yield('content')
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@yield('title')</title>
+        @vite(['resources/scss/app.scss', 'resources/js/app.js'])
+    </head>
+    <body class="body">
+        @yield('content')
+    </body>
 </html>
 ```
 
@@ -344,14 +336,10 @@ export default defineConfig({
 > Abrimos el archivo `welcome.blade.php` ubicado en `resources/views/` borramos su contenido y escribimos lo siguiente:
 
 ```html
-@extends('layouts.plantilla')
-
-@section('title', 'Welcome')
-
-@section('content')
-    <main class="container-fluid">
-        <h1>Welcome</h1>
-    </main>
+@extends('layouts.plantilla') @section('title', 'Welcome') @section('content')
+<main class="container-fluid">
+    <h1>Welcome</h1>
+</main>
 @endsection
 ```
 
@@ -365,19 +353,19 @@ export default defineConfig({
 
 ```css
 .center_container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .body {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr auto;
-  grid-template-areas:
-    'header'
-    'main'
-    'footer';
-  min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        "header"
+        "main"
+        "footer";
+    min-height: 100vh;
 }
 ```
 
@@ -458,7 +446,6 @@ composer dump-autoload
 > Creamos la carpeta `config` y el archivo `link_nav.json` en la ubicación `storage/app/config`.
 
 ```json
-
 {
     "guest": {
         "welcome": {
@@ -470,7 +457,6 @@ composer dump-autoload
         }
     }
 }
-
 ```
 
 [Subir](#top)
@@ -552,84 +538,48 @@ php artisan make:component dom/Button
 > Abrimos el archivo `button.blade.php` en la ubicación `resources/view/components/dom/` y escribimos:
 
 ```html
-
-@switch($type)
-    @case('link')
-        <a href="{{ $route ?? '#' }}" {{ $attributes->merge(['class' => "$class"]) }} id="{{ $id ?? '' }}"
-            @isset($tooltip)
-                @if ($tooltip != null && $tooltip != '')
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="{{ $tooltip['position'] }}"
-                    @isset($tooltip['class'])
-                        data-bs-custom-class="{{ $tooltip['class'] }}"
-                    @endisset
-                    data-bs-title="@lang($tooltip['text'])"
-                @endif
-            @endisset
-        > {{ $slot }} </a>
-    @break
-
-    @case('submit')
-        <button type="button" {{ $attributes->merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}"
-            @isset($form)
-                form="{{ $form }}"
-            @endisset
-            @isset($tooltip)
-                @if ($tooltip != null && $tooltip != '')
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="{{ $tooltip['position'] }}"
-                    @isset($tooltip['class'])
-                        data-bs-custom-class="{{ $tooltip['class'] }}"
-                    @endisset
-                    data-bs-title="@lang($tooltip['text'])"
-                @endif
-            @endisset>
-            {{ $slot }}
-        </button>
-    @break
-
-    @case('dropdown')
-    <div class="{{ $position }}">
-        <button type="button" {{ $attributes->merge(['class' => "dropdown-toggle btn $class"]) }} id="{{ $id ?? '' }}"
-            data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
-            @isset($tooltip)
-                @if ($tooltip != null && $tooltip != '')
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="{{ $tooltip['position'] }}"
-                    @isset($tooltip['class'])
-                        data-bs-custom-class="{{ $tooltip['class'] }}"
-                    @endisset
-                    data-bs-title="@lang($tooltip['text'])"
-                @endif
-            @endisset>
-            {{-- <x-slot:title>
-                Esto es el titulo del botón
-            </x-slot:title> --}}
-            {{ $title }}
-        </button>
-        {{ $slot }}
-    </div>
-    @break
-
-    @default
-    <button type="button" {{ $attributes->merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}"
-        @isset($route)
-            onclick="{{ $route }}"
-        @endisset
-    @isset($tooltip)
-        @if ($tooltip != null && $tooltip != '')
-            data-bs-toggle="tooltip"
-            data-bs-placement="{{ $tooltip['position'] }}"
-            @isset($tooltip['class'])
-                data-bs-custom-class="{{ $tooltip['class'] }}"
-            @endisset
-            data-bs-title="@lang($tooltip['text'])"
-        @endif
-    @endisset>
-        {{ $slot }}
+@switch($type) @case('link')
+<a href="{{ $route ?? '#' }}" {{ $attributes-
+    >merge(['class' => "$class"]) }} id="{{ $id ?? '' }}" @isset($tooltip) @if
+    ($tooltip != null && $tooltip != '') data-bs-toggle="tooltip"
+    data-bs-placement="{{ $tooltip['position'] }}" @isset($tooltip['class'])
+    data-bs-custom-class="{{ $tooltip['class'] }}" @endisset
+    data-bs-title="@lang($tooltip['text'])" @endif @endisset > {{ $slot }}
+</a>
+@break @case('submit')
+<button type="button" {{ $attributes->
+    merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}" @isset($form)
+    form="{{ $form }}" @endisset @isset($tooltip) @if ($tooltip != null &&
+    $tooltip != '') data-bs-toggle="tooltip" data-bs-placement="{{
+    $tooltip['position'] }}" @isset($tooltip['class']) data-bs-custom-class="{{
+    $tooltip['class'] }}" @endisset data-bs-title="@lang($tooltip['text'])"
+    @endif @endisset> {{ $slot }}
+</button>
+@break @case('dropdown')
+<div class="{{ $position }}">
+    <button type="button" {{ $attributes->
+        merge(['class' => "dropdown-toggle btn $class"]) }} id="{{ $id ?? '' }}"
+        data-bs-toggle="dropdown" aria-expanded="false"
+        data-bs-auto-close="outside" @isset($tooltip) @if ($tooltip != null &&
+        $tooltip != '') data-bs-toggle="tooltip" data-bs-placement="{{
+        $tooltip['position'] }}" @isset($tooltip['class'])
+        data-bs-custom-class="{{ $tooltip['class'] }}" @endisset
+        data-bs-title="@lang($tooltip['text'])" @endif @endisset> {{--
+        <x-slot:title> Esto es el titulo del botón </x-slot:title> --}} {{
+        $title }}
     </button>
+    {{ $slot }}
+</div>
+@break @default
+<button type="button" {{ $attributes->
+    merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}" @isset($route)
+    onclick="{{ $route }}" @endisset @isset($tooltip) @if ($tooltip != null &&
+    $tooltip != '') data-bs-toggle="tooltip" data-bs-placement="{{
+    $tooltip['position'] }}" @isset($tooltip['class']) data-bs-custom-class="{{
+    $tooltip['class'] }}" @endisset data-bs-title="@lang($tooltip['text'])"
+    @endif @endisset> {{ $slot }}
+</button>
 @endswitch
-
 ```
 
 > [!NOTE]
@@ -653,33 +603,25 @@ php artisan make:component nav.partials.structure --view
 > Abrimos el archivo `structure.blade.php` ubicado `resources/views/components/nav/partials/` y escribimos:
 
 ```html
-
-@props(['items'])
-@foreach ($items as $item)
-    <li class="nav-item">
-        <x-dom.button
+@props(['items']) @foreach ($items as $item)
+<li class="nav-item">
+    <x-dom.button
         :type="$item['type']"
         :id="$item['slug']"
         :class="(isset($item['route']) && request()->routeIs($item['route']) ? $item['class']. ' active disabled' : $item['class'])"
         :route="(isset($item['route'])) ? $item['route'] : null"
-        :position="(isset($item['position'])) ? $item['position'] : ''">
-            @if ($item['type'] == 'dropdown')
-                <x-slot:title>
-                    {{ $item['name'] }}
-                </x-slot:title>
-            @else
-                {{ $item['name'] }}
-            @endif
-
-            @if (isset($item['items']))
-                <ul class="dropdown-menu">
-                    <x-nav.partials.structure :items="$item['items']" />
-                </ul>
-            @endif
-        </x-dom.button>
-    </li>
+        :position="(isset($item['position'])) ? $item['position'] : ''"
+    >
+        @if ($item['type'] == 'dropdown')
+        <x-slot:title> {{ $item['name'] }} </x-slot:title>
+        @else {{ $item['name'] }} @endif @if (isset($item['items']))
+        <ul class="dropdown-menu">
+            <x-nav.partials.structure :items="$item['items']" />
+        </ul>
+        @endif
+    </x-dom.button>
+</li>
 @endforeach
-
 ```
 
 [Subir](#top)
@@ -721,38 +663,29 @@ public function __construct(
 > Abrimos el archivo `links.blade.php` en la ubicación `resources/view/components/nav/` y escribimos:
 
 ```html
-
-@foreach ($links as $link => $buttons)
-    @if ($link == $name)
-        <ol class="navbar-nav">
-            @foreach ($buttons as $button)
-                <li class="nav-item">
-                    <x-dom.button
-                    :type="$button['type']"
-                    :id="$button['slug']"
-                    :class="(isset($button['route']) && request()->routeIs($button['route']) ? $button['class']. ' active disabled' : $button['class'])"
-                    :route="(isset($button['route'])) ? $button['route'] : ''"
-                    :position="(isset($button['position'])) ? $button['position'] : ''">
-                        @if ($button['type'] == 'dropdown')
-                            <x-slot:title>
-                                {{ $button['name'] }}
-                            </x-slot:title>
-                        @else
-                            {{ $button['name'] }}
-                        @endif
-
-                        @if (isset($button['items']))
-                            <ul class="dropdown-menu">
-                                <x-nav.partials.structure :items="$button['items']" />
-                            </ul>
-                        @endif
-                    </x-dom.button>
-                </li>
-            @endforeach
-        </ol>
-    @endif
-@endforeach
-
+@foreach ($links as $link => $buttons) @if ($link == $name)
+<ol class="navbar-nav">
+    @foreach ($buttons as $button)
+    <li class="nav-item">
+        <x-dom.button
+            :type="$button['type']"
+            :id="$button['slug']"
+            :class="(isset($button['route']) && request()->routeIs($button['route']) ? $button['class']. ' active disabled' : $button['class'])"
+            :route="(isset($button['route'])) ? $button['route'] : ''"
+            :position="(isset($button['position'])) ? $button['position'] : ''"
+        >
+            @if ($button['type'] == 'dropdown')
+            <x-slot:title> {{ $button['name'] }} </x-slot:title>
+            @else {{ $button['name'] }} @endif @if (isset($button['items']))
+            <ul class="dropdown-menu">
+                <x-nav.partials.structure :items="$button['items']" />
+            </ul>
+            @endif
+        </x-dom.button>
+    </li>
+    @endforeach
+</ol>
+@endif @endforeach
 ```
 
 [Subir](#top)
@@ -772,22 +705,30 @@ php artisan make:component layouts.header --view
 > Abrimos el archivo `header.blade.php` en la ubicación `resources/view/components/layouts/` y escribimos:
 
 ```html
-
 <header class="bg-light border-bottom">
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
             <a class="navbar-brand">{{ env('APP_NAME') }}</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+            >
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <div
+                class="collapse navbar-collapse justify-content-between"
+                id="navbarNav"
+            >
                 <x-nav.links name="guest" />
             </div>
         </div>
     </nav>
 </header>
-
 ```
 
 > [!WARNING]
@@ -796,15 +737,13 @@ php artisan make:component layouts.header --view
 > Creamos el archivo `header.scss` ubicado en `resources/scss/` y escribimos:
 
 ```scss
-
-#navbarNav  {
+#navbarNav {
     div.dropdown {
         .dropdown-menu[data-bs-popper] {
             margin-top: 8px !important;
         }
     }
 }
-
 ```
 
 > [!IMPORTANT]
@@ -813,12 +752,10 @@ php artisan make:component layouts.header --view
 > Abrimos el archivo `plantilla.blade.php` ubicado en `resources/views/layouts/` añadimos el componente header
 
 ```html
-
 <body class="body">
     <x-layouts.header />
     @yield('content')
 </body>
-
 ```
 
 [Subir](#top)
@@ -838,25 +775,23 @@ php artisan make:component layouts.footer --view
 > Abrir el archivo `footer.blade.php` en la ubicación `resources/views/components/layouts/`
 
 ```html
-
 <footer class="bg-light text-center text-lg-start border-top footer-dashboard">
-  <div class="text-center p-3 bg-body-tertiary">
-    © {{ date('Y') }} <a href="{{config('app.url')}}">{{config('app.name')}}</a>. @lang('All rights reserved.')
-  </div>
+    <div class="text-center p-3 bg-body-tertiary">
+        © {{ date('Y') }}
+        <a href="{{config('app.url')}}">{{config('app.name')}}</a>. @lang('All
+        rights reserved.')
+    </div>
 </footer>
-
 ```
 
 > Abrimos el archivo `plantilla.blade.php` ubicado en `resources/views/layouts/` añadimos el componente header
 
 ```html
-
 <body class="body">
     <x-layouts.header />
     @yield('content')
     <x-layouts.footer />
 </body>
-
 ```
 
 [Subir](#top)
@@ -880,19 +815,28 @@ php artisan make:component messages.partials.icons --view
 > Abrir el archivo `icons.blade.php` en la ubicación `resources/views/components/messages/
 
 ```html
-
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-  <symbol id="success-fill" fill="currentColor" viewBox="0 0 16 16">
-    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-  </symbol>
-  <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
-    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
-  </symbol>
-  <symbol id="warning-fill" fill="currentColor" viewBox="0 0 16 16">
-    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-  </symbol>
+    <symbol id="success-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path
+            d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
+        />
+    </symbol>
+    <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path
+            d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"
+        />
+    </symbol>
+    <symbol id="warning-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path
+            d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"
+        />
+    </symbol>
+    <symbol id="danger-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path
+            d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"
+        />
+    </symbol>
 </svg>
-
 ```
 
 > Abrimos el archivo `Alert.php` en la ubicación `app/View/Components/messages/` y escribimos:
@@ -912,25 +856,219 @@ public function __construct(
 > Abrir el archivo `alert.blade.php` en la ubicación `resources/views/components/messages/`
 
 ```html
-
 <x-messages.partials.icons />
 <div class="alert alert-{{ $type }} alert-dismissible fade show" role="alert">
     @if ($icon)
-        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="{{ $type }}:">
-            <use xlink:href="{{ ($type == 'danger') ? '#warning-fill': '#'.$type.'-fill' }}" />
-        </svg>
-    @endif
-    {{ $slot }}
-    @if ($close)
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <svg
+        class="bi flex-shrink-0 me-2"
+        width="24"
+        height="24"
+        role="img"
+        aria-label="{{ $type }}:"
+    >
+        <use xlink:href="#{{ $type }}-fill" />
+    </svg>
+    @endif {{ $slot }} @if ($close)
+    <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+    ></button>
     @endif
 </div>
+```
+
+[Subir](#top)
+
+### Componente toasts
+
+```console
+
+php artisan make:component messages/Toasts
+
+```
+
+> Abrimos el archivo `Toasts.php` en la ubicación `app/View/Components/messages/` y escribimos:
+
+```php
+
+public function __construct(
+    public String $type = 'success',
+        public Bool $close = true,
+        public Bool $icon = true,
+        public Int $delay = 5000,
+        public String $autohide = 'true',
+        public String $position = 'top-0 end-0'
+) {
+    //
+}
+
+```
+
+> Abrimos el archivo `toasts.blade.php` en la ubicación `resources/views/components/messages/` y escribimos:
+
+```html
+
+<x-messages.partials.icons />
+
+<div class="toast {{ $type != 'info' ? 'text-white' : '' }} bg-{{ $type }}" role="alert" aria-live="assertive"
+    aria-atomic="true" data-bs-delay="{{ $delay }}" data-bs-autohide="{{ $autohide }}">
+    <div class="toast-header {{ $type != 'info' ? 'text-white' : '' }} bg-{{ $type }}">
+        @if ($icon)
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img"
+                aria-label="{{ ucfirst($type) }} :">
+                <use xlink:href="#{{ $type }}-fill" />
+            </svg>
+        @endif
+        <strong class="me-auto">@lang(ucfirst($title))</strong>
+        <small id="date_toast" class="{{ $type != 'info' ? 'text-white' : '' }}"></small>
+        <button id="close_toats" type="button" class="btn-close {{ $type != 'info' ? 'btn-close-white' : '' }}"
+            aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+        {{ $slot }}
+    </div>
+    @if ($autohide == 'true')
+        <div class="progress rounded-bottom justify-content-end bg-gray-400" style="height: 7px;">
+            <div class="progress-bar bg-{{ $type }}" role="progressbar"></div>
+        </div>
+    @endif
+</div>
+
+
+```
+
+> Creamos el archivo `toasts.scss` en la ubicación `resources/scss/` y escribimos:
+
+```scss
+.toast {
+    animation-name: open_toast;
+    animation-duration: 500ms;
+    animation-timing-function: ease-out;
+}
+.toast .progress {
+    border-radius: 0;
+}
+
+.close-toast {
+    animation-name: close_toast;
+    animation-duration: 2s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: forwards;
+}
+
+.bg-gray-400 {
+    background-color: $gray-400;
+}
+
+@keyframes open_toast {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+@keyframes close_toast {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+@keyframes progress_toast {
+    from {
+        width: 0%;
+    }
+    to {
+        width: 100%;
+    }
+}
+```
+
+> Creamos el archivo `toasts.js` en la ubicación `resources/js/` y escribimos:
+
+```js
+
+$(function () {
+    $(".toast").toast("show");
+});
+
+$(".toast").on("shown.bs.toast", function () {
+    let dt = new Date();
+    let time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+    $(this).children(".toast-header").children("#date_toasts").html(time);
+
+    let progress_bar = {
+        "animation-name": "progress_toast",
+        "animation-fill-mode": "forwards",
+        "animation-duration": $(this).data("bs-delay") + "ms",
+        "animation-timing-function": "ease-out",
+        "animation-iteration-count": "1",
+    };
+
+    if ($(this).data("bs-autohide")) {
+        $(this).children(".progress").children("div").css(progress_bar);
+    }
+});
+
+$("#close_toats").on("click", function () {
+    $(this).closest(".toast").addClass("close-toast");
+    setTimeout(() => {
+        $(this).closest(".toast").toast("hide");
+    }, 2500);
+});
+
+$(".toast").on("hidden.bs.toast", function () {
+    $(this).addClass("close-toast");
+});
+
+
+```
+
+> [!IMPORTANT]
+> Y importamos los archivos creados el css  `@import "./toasts"` en  `app.scss` y el otro `import "toasts.js"` en  `app.js`
+
+> Creamos el archivo `toasts.blade.php` en la ubicación `resources/views/messages/` y escribimos:
+
+```html
+
+@if (session('message'))
+    <div class="toast-container position-absolute {{ session('message')['position'] ?? 'top-0 end-0' }} p-3">
+        <x-messages.toasts type="{{ session('message')['type'] ?? 'info' }}"
+            delay="{{ session('message')['delay'] ?? '5000' }}" :autohide="session('message')['autohide'] ?? 'true'" :icon="session('message')['icon'] ?? true">
+            <x-slot:title>
+                {{ session('message')['title'] ?? '' }}
+            </x-slot:title>
+            {{ session('message')['message'] ?? '' }}
+        </x-messages.toasts>
+    </div>
+@endif
+
+
+```
+
+> Abrimos el archivo `plantilla.blade.php` ubicado en `resources/views/layouts/` añadimos el componente toasts
+
+```html
+
+<body class="body">
+    <x-layouts.header />
+    @include('messages.toasts')
+    @yield('content')
+    <x-layouts.footer />
+</body>
 
 ```
 
 [Subir](#top)
 
-
->Pues eso es todo espero que sirva. 👍
+> Pues eso es todo espero que sirva. 👍
 
 [Subir](#top)
