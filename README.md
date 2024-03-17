@@ -61,6 +61,15 @@ Proyecto de inicio de laravel con Bootstrap.
     -   [Componente footer](#item22)
     -   [Componente alert](#item23)
     -   [Componente toasts](#item24)
+-   [Authentication](#item25)
+    -   [Componentes de autentificación](#item26)
+        -   [Crear componente de tarjeta](#item27)
+        -   [Crear componente de los inputs](#item28)
+        -   [Crear componente form](#item29)
+        -   [Crear componente modal](#item30)
+        -   [Crear componente de registro](#item31)
+        -   [Crear componentes de login](#item32)
+
 
 <a name="item1"></a>
 
@@ -447,7 +456,7 @@ composer dump-autoload
 
 ```json
 {
-    "guest": {
+    "links": {
         "welcome": {
             "name": "Welcome",
             "slug": "welcome",
@@ -547,7 +556,7 @@ php artisan make:component dom/Button
     data-bs-title="@lang($tooltip['text'])" @endif @endisset > {{ $slot }}
 </a>
 @break @case('submit')
-<button type="button" {{ $attributes->
+<button type="submit" {{ $attributes->
     merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}" @isset($form)
     form="{{ $form }}" @endisset @isset($tooltip) @if ($tooltip != null &&
     $tooltip != '') data-bs-toggle="tooltip" data-bs-placement="{{
@@ -572,8 +581,13 @@ php artisan make:component dom/Button
 </div>
 @break @default
 <button type="button" {{ $attributes->
-    merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}" @isset($route)
-    onclick="{{ $route }}" @endisset @isset($tooltip) @if ($tooltip != null &&
+    merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}" @if(isset($route) && $type != 'modal')
+            onclick="{{ $route }}"
+        @endif
+        @if ($type == 'modal')
+            data-bs-toggle="modal" data-bs-target="#{{ $route }}"
+        @endif
+        @isset($tooltip) @if ($tooltip != null &&
     $tooltip != '') data-bs-toggle="tooltip" data-bs-placement="{{
     $tooltip['position'] }}" @isset($tooltip['class']) data-bs-custom-class="{{
     $tooltip['class'] }}" @endisset data-bs-title="@lang($tooltip['text'])"
@@ -724,7 +738,7 @@ php artisan make:component layouts.header --view
                 class="collapse navbar-collapse justify-content-between"
                 id="navbarNav"
             >
-                <x-nav.links name="guest" />
+                <x-nav.links name="links" />
             </div>
         </div>
     </nav>
@@ -800,13 +814,11 @@ php artisan make:component layouts.footer --view
 
 ### Componente alert
 
+> Typee: en la Consola:
+
 ```console
 
 php artisan make:component messages/Alert
-
-```
-
-```console
 
 php artisan make:component messages.partials.icons --view
 
@@ -1064,6 +1076,625 @@ $(".toast").on("hidden.bs.toast", function () {
     @yield('content')
     <x-layouts.footer />
 </body>
+
+```
+
+[Subir](#top)
+
+<a name="item25"></a>
+
+## Authentication
+
+<a name="item26"></a>
+
+### Componentes de autentificación
+
+<a name="item27"></a>
+
+#### Crear componente de tarjeta
+
+> Typee: en la Consola:
+
+```console
+
+php artisan make:component dom.card --view
+
+```
+
+> Abrimos el archivo `card.blade.php` en la ubicación `resources/views/components/dom/` y escribimos:
+
+```html
+
+@props(['class' => ''])
+
+<div {{ $attributes->class(['card ' . $class]) }}>
+    {{ $header ?? '' }}
+    <div class="card-body">
+        {{ $slot }}
+    </div>
+    {{ $footer ?? '' }}
+</div>
+
+```
+
+[Subir](#top)
+
+<a name="item28"></a>
+
+#### Crear componente de los inputs
+
+> Typee: en la Consola:
+
+```console
+
+php artisan make:component dom/Input
+
+```
+
+> Abrimos el archivo `Input.php` en la ubicación `app/View/Components/dom/` y escribimos:
+
+```php
+
+public function __construct(
+    public String $name,
+    public String $type = 'text',
+    public String|Null $id = null,
+    public String|Bool $label = false,
+    public String $class = '',
+    public String $placeholder = '',
+    public Bool $readonly = false,
+    public Bool $disabled = false,
+    public String $value = '',
+    public String|Null $form = null,
+    public Int $col = 10,
+    public Int $rows = 5,
+) {
+    //
+}
+
+```
+
+> Abrimos el archivo `input.blade.php` en la ubicación `resources/views/components/dom/` y escribimos:
+
+```html
+
+@if ($label)
+    <label for="{{ $id ?? '' }}" class="ms-1">
+        @lang($label)
+    </label>
+@endif
+
+@switch($type)
+    @case('textarea')
+        <textarea type="textarea" name="{{ $name }}" {{ $attributes->merge(['class' => "form-control $class"]) }} placeholder="{{ $placeholder }}" clo="{{ $col }}" rows="{{ $rows }}"
+        @if ($readonly)
+            @readonly(true)
+        @endif
+        @if ($disabled)
+            @disabled(true)
+        @endif
+        @if ($form)
+            form="{{ $form }}"
+        @endif
+        >
+            {{ old($name, $slot) }}
+        </textarea>
+    @break
+
+    @default
+        <input type="{{ $type }}" name="{{ $name }}" {{ $attributes->merge(['class' => "form-control $class"]) }} placeholder="{{ $placeholder }}" value="{{ old($name, $value) }}"
+        @if ($readonly)
+            @readonly(true)
+        @endif
+        @if ($disabled)
+            @disabled(true)
+        @endif
+        @if ($form)
+            form="{{ $form }}"
+        @endif
+        >
+@endswitch
+
+```
+
+[Subir](#top)
+
+<a name="item29"></a>
+
+#### Crear componente form
+
+> Typee: en la Consola:
+
+```console
+
+php artisan make:component dom/Form
+
+```
+
+> Abrimos el archivo `Form.php` en la ubicación `app/View/Components/dom/` y escribimos:
+
+```php
+
+public function __construct(
+    public String $action = '#',
+    public String $method = 'GET',
+    public String $enctype = 'multipart/form-data',
+    public Bool $valid = true,
+    public String|Null $id = null,
+) {
+    //
+}
+
+```
+
+> Abrimos el archivo `form.blade.php` en la ubicación `resources/views/components/dom/` y escribimos:
+
+```html
+
+<form id="{{$id ?? ''}}" action="{{$action}}"
+@if (strtoupper($method) == 'GET')
+    method="{{strtoupper($method) }}"
+@else
+    method="POST"
+@endif
+ enctype="{{$enctype}}"
+@if ($valid)
+    onsubmit="return validateForm(event)"
+@endif
+>
+    @if (strtoupper($method) != 'GET')
+    @csrf
+    @endif
+    @if (strtoupper($method) != 'GET' && strtoupper($method) != 'POST')
+        @method($method)
+    @endif
+    {{$slot}}
+</form>
+
+```
+
+> Creamos el archivo `functions.js` en la ubicación `resources/js/` lo abrimos y escribimos:
+
+```js
+
+// Función que valida los formularios.
+function validateForm(e) {
+    let form = $(e.target);
+    let valid = false;
+
+    form.find("input, select, textarea").each(function (i, element) {
+        if (element.type != "hidden" && $(element).val() != "") {
+            valid = true;
+        }
+    });
+    if ($(e.target).attr("id") != "") {
+        $(
+            "input[form=" +
+                $(e.target).attr("id") +
+                "], select[form=" +
+                $(e.target).attr("id") +
+                "], textarea[form=" +
+                $(e.target).attr("id") +
+                "]"
+        ).each(function (i, element) {
+            if (element.type != "hidden" && $(element).val() != "") {
+                valid = true;
+            }
+        });
+    }
+
+    return valid;
+}
+window.validateForm = validateForm;
+
+// Función que activa o desactiva el botón del formulario.
+$("form, input, select, textarea").on("change", function (e) {
+
+    let btn = null;
+    let form = $(e.target).parents("form")[0];
+
+
+    if (form == undefined) {
+
+        form = $("#" + $(e.target).attr("form"));
+    }
+
+    $(form)
+        .find('button[type="submit"]')
+        .each(function () {
+            btn = this;
+        });
+
+    if ($(e.target).val() === "") {
+
+        $(btn).addClass("disabled");
+
+    } else {
+
+        $(btn).removeClass("disabled");
+
+    }
+
+    $(form)
+        .find("input, select, textarea")
+        .each(function () {
+            if (this.type != "hidden" && $(this).val() != "") {
+                $(btn).removeClass("disabled");
+                return false;
+            }
+        });
+
+});
+
+```
+
+> [!IMPORTANT]
+> Y importamos el archivo `import "./functions";"` en  `app.js`
+
+[Subir](#top)
+
+<a name="item30"></a>
+
+#### Crear componente modal
+
+> Typee: en la Consola:
+
+```console
+
+php artisan make:component dom/Modal
+
+```
+
+> Abrimos el archivo `Modal.php` en la ubicación `app/View/Components/dom/` y escribimos:
+
+```php
+
+public function __construct(
+    public String $id,
+    public String $class = '',
+    public Bool $header = true,
+    public String|Bool $footer = false,
+    public String $title = '',
+    public Bool $close = true,
+    public Bool $static = true,
+    public Bool $scrollable = false,
+    public Bool $centered = false
+) {
+    //
+}
+
+```
+
+> Abrimos el archivo `modal.blade.php` en la ubicación `resources/views/components/dom/` y escribimos:
+
+```html
+
+<div id="{{ $id }}" class="modal fade" tabindex="-1" aria-hidden="true"
+    @if ($static) data-bs-backdrop="static" data-bs-keyboard="false" @endif>
+    <div class="modal-dialog {{ $centered ? 'modal-dialog-centered' : '' }} {{ $scrollable ? 'modal-dialog-scrollable' : '' }}">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ $title }}</h5>
+                @if ($close)
+                    <x-dom.button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></x-dom.button>
+                @endif
+            </div>
+            <div class="modal-body">
+                {{ $slot }}
+            </div>
+            @if ($footer)
+                <div class="modal-footer">
+                    @if ($close)
+                        <x-dom.button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            aria-label="Close">Close</x-dom.button>
+                    @endif
+                    {{ $footer }}
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
+
+```
+
+[Subir](#top)
+
+<a name="item31"></a>
+
+#### Crear componentes de registro
+
+> Typee: en la Consola:
+
+```console
+
+php artisan make:component auth.singup.partials.form --view
+
+php artisan make:component auth.singup.partials.card --view
+
+php artisan make:component auth.singup.partials.modal --view
+
+```
+
+> Abrimos el archivo `form.blade.php` en la ubicación `resources/view/components/auth/singup/partials/` y escribimos:
+
+```html
+
+<div class="grid align-items-center" style="--bs-gap: 1rem;">
+    <div class="g-col-12">
+        <x-dom.input type="text" label="Name" name="name" placeholder="You Name or Username" form="form_register" />
+    </div>
+    <div class="g-col-12">
+        <x-dom.input type="email" name="email" label="Email address" placeholder="You Email address"
+            form="form_register" />
+    </div>
+    <div class="g-col-12">
+        <x-dom.input type="password" name="password" label="Password" placeholder="You Password" form="form_register" />
+    </div>
+    <div class="g-col-12">
+        <x-dom.input type="password" label="Password Confirmation" name="password_confirmation"
+            placeholder="You Confirmation Password" form="form_register" />
+    </div>
+</div>
+
+```
+
+> Abrimos el archivo `card.blade.php` en la ubicación `resources/view/components/auth/singup/partials/` y escribimos:
+
+```html
+
+<x-dom.card>
+    <x-slot:header>
+        <div class="card-header">
+            Sing Up
+        </div>
+    </x-slot:header>
+    <x-auth.singup.partials.form />
+    <x-slot:footer>
+        <div class="card-footer d-flex justify-content-end">
+            <x-dom.form id="form_register">
+                <x-dom.button type="submit" class="btn-primary disabled">
+                    @lang('Sing Up')
+                </x-dom.button>
+            </x-dom.form>
+        </div>
+    </x-slot:footer>
+</x-dom.card>
+
+```
+
+> Abrimos el archivo `modal.blade.php` en la ubicación `resources/view/components/auth/singup/partials/` y escribimos:
+
+```html
+
+<x-dom.modal id="singup" :centered="true" class="modal-fullscreen-md-down">
+    <x-slot:title>
+        @lang('Sing Up')
+    </x-slot:title>
+    <x-auth.singup.partials.form/>
+    <x-slot:footer>
+        <x-dom.form id="form_register">
+            <x-dom.button type="submit" class="btn-primary disabled">
+                @lang('Sing Up')
+            </x-dom.button>
+        </x-dom.form>
+    </x-slot:footer>
+</x-dom.modal>
+
+```
+
+> Abrimos el archivo `link_nav.json` en la ubicación `storage/app/config` y creamos una nueva lista.
+
+```json
+{
+    "links": {
+        "welcome": {
+            "name": "Welcome",
+            "slug": "welcome",
+            "type": "link",
+            "route": "welcome",
+            "class": "nav-link"
+        }
+    },
+    "login": {
+        "singup": {
+            "name": "Sing Up",
+            "slug": "sing-up",
+            "type": "modal",
+            "route": "singup",
+            "class": "nav-link"
+        }
+    }
+}
+```
+
+
+> Abrimos el archivo `header.blade.php` en la ubicación `resources/view/components/layouts/` y escribimos:
+
+```html
+
+    <x-nav.links name="links" />
+@guest
+    <x-nav.links name="login" />
+@endguest
+
+```
+
+> Abrimos el archivo `welcome.blade.php` en la ubicación `resources/view/` y añadimos:
+
+```html
+
+<x-auth.singup.partials.modal/>
+
+```
+
+> Creamos el archivo `register.blade.php` en la ubicación `resources/view/auth/` y añadimos:
+
+```html
+
+@extends('layouts.plantilla')
+@section('title', trans('Sign Up'))
+@section('content')
+    <main class="container-fluid">
+        <div class="grid align-items-center" style="--bs-columns: 3; --bs-gap: 1rem;">
+            <div class="g-col-3 g-col-lg-1 g-start-lg-2">
+                <x-auth.singup.partials.card />
+            </div>
+        </div>
+    </main>
+@endsection
+
+```
+
+[Subir](#top)
+
+<a name="item32"></a>
+
+#### Crear componentes de login
+
+> Typee: en la Consola:
+
+```console
+
+php artisan make:component auth.singin.partials.form --view
+
+php artisan make:component auth.singin.partials.card --view
+
+php artisan make:component auth.singin.partials.modal --view
+
+```
+
+> Abrimos el archivo `form.blade.php` en la ubicación `resources/view/components/auth/singin/partials/` y escribimos:
+
+```html
+
+<div class="grid align-items-center" style="--bs-gap: 1rem;">
+    <div class="g-col-12">
+        <x-dom.input type="email" name="email" label="Email address" placeholder="You Email address"
+            form="form_register" />
+    </div>
+    <div class="g-col-12">
+        <div class="d-flex justify-content-between">
+            <label class="align-self-center" for="">@lang('Password')</label>
+            <x-dom.button type='modal' class="btn-sm me-1 btn-link" name="forgot-password">
+                @lang('Forgot Your Password?')
+            </x-dom.button>
+        </div>
+        <x-dom.input type="password" name="password" placeholder="You Password" form="form_register" />
+    </div>
+    <div class="g-col-12 text-center">
+        <div class="form-check form-switch d-flex justify-content-center">
+            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" name="remember" form="form_register">
+            <label class="form-check-label ms-1" for="flexSwitchCheckDefault">
+                @lang('Remember Me')
+            </label>
+        </div>
+    </div>
+</div>
+
+
+```
+
+> Abrimos el archivo `card.blade.php` en la ubicación `resources/view/components/auth/singin/partials/` y escribimos:
+
+```html
+
+<x-dom.card>
+    <x-slot:header>
+        <div class="card-header">
+            Sing In
+        </div>
+    </x-slot:header>
+    <x-auth.singin.partials.form />
+    <x-slot:footer>
+        <div class="card-footer d-flex justify-content-end">
+            <x-dom.form id="form_register">
+                <x-dom.button type="submit" class="btn-primary disabled">
+                    @lang('Sing In')
+                </x-dom.button>
+            </x-dom.form>
+        </div>
+    </x-slot:footer>
+</x-dom.card>
+
+
+```
+
+> Abrimos el archivo `modal.blade.php` en la ubicación `resources/view/components/auth/singin/partials/` y escribimos:
+
+```html
+
+<x-dom.modal id="singin" :centered="true" class="modal-fullscreen-md-down">
+    <x-slot:title>
+        @lang('Sing In')
+    </x-slot:title>
+    <x-auth.singin.partials.form/>
+    <x-slot:footer>
+        <x-dom.form id="form_register">
+            <x-dom.button type="submit" class="btn-primary disabled">
+                @lang('Sing In')
+            </x-dom.button>
+        </x-dom.form>
+    </x-slot:footer>
+</x-dom.modal>
+
+```
+
+> Abrimos el archivo `link_nav.json` en la ubicación `storage/app/config` y creamos una nueva lista.
+
+```json
+{
+    "links": {
+        "welcome": {
+            "name": "Welcome",
+            "slug": "welcome",
+            "type": "link",
+            "route": "welcome",
+            "class": "nav-link"
+        }
+    },
+    "login": {
+        "singin": {
+            "name": "Sing In",
+            "slug": "sing-in",
+            "type": "modal",
+            "route": "singin",
+            "class": "nav-link"
+        },
+        "singup": {
+            "name": "Sing Up",
+            "slug": "sing-up",
+            "type": "modal",
+            "route": "singup",
+            "class": "nav-link"
+        }
+    }
+}
+```
+
+> Abrimos el archivo `welcome.blade.php` en la ubicación `resources/view/` y añadimos:
+
+```html
+
+<x-auth.singin.partials.modal />
+
+```
+
+> Creamos el archivo `login.blade.php` en la ubicación `resources/view/auth/` y añadimos:
+
+```html
+
+@extends('layouts.plantilla')
+@section('title', trans('Sign In'))
+@section('content')
+    <main class="container-fluid">
+        <div class="grid align-items-center" style="--bs-columns: 3; --bs-gap: 1rem;">
+            <div class="g-col-3 g-col-lg-1 g-start-lg-2">
+                <x-auth.singin.partials.card />
+            </div>
+        </div>
+    </main>
+@endsection
 
 ```
 

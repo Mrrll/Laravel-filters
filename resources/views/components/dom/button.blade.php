@@ -15,7 +15,7 @@
     @break
 
     @case('submit')
-        <button type="button" {{ $attributes->merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}"
+        <button type="submit" {{ $attributes->merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}"
             @isset($form)
                 form="{{ $form }}"
             @endisset
@@ -58,9 +58,12 @@
 
     @default
     <button type="button" {{ $attributes->merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}"
-        @isset($route)
+        @if(isset($route) && $type != 'modal')
             onclick="{{ $route }}"
-        @endisset
+        @endif
+        @if ($type == 'modal')
+            data-bs-toggle="modal" data-bs-target="#{{ $route }}"
+        @endif
     @isset($tooltip)
         @if ($tooltip != null && $tooltip != '')
             data-bs-toggle="tooltip"

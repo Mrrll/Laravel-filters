@@ -7,7 +7,10 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-                <x-nav.links name="guest" />
+                @guest
+                    <x-nav.links name="links" />
+                    <x-nav.links name="login" />
+                @endguest
             </div>
         </div>
     </nav>
