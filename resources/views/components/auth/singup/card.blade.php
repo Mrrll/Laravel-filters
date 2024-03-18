@@ -4,7 +4,7 @@
             Sing Up
         </div>
     </x-slot:header>
-    <x-auth.singup.partials.form />
+    <x-auth.singup.form />
     <x-slot:footer>
         <div class="card-footer d-flex justify-content-end">
             <x-dom.form id="form_register">

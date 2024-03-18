@@ -69,7 +69,14 @@ Proyecto de inicio de laravel con Bootstrap.
         -   [Crear componente modal](#item30)
         -   [Crear componente de registro](#item31)
         -   [Crear componentes de login](#item32)
-
+    -   [Controlador de de autentificación](#item34)
+    -   [Rutas de autentificación](#item35)
+    -   [Validaciones de formularios](#item36)
+    -   [Verificación de emails](#item37)
+        -   [Crear request de verificación](#item38)
+        -   [Rutas de verificación email](#item39)
+        -   [Vista de verificación email](#item40)
+        -   [Configuración del modelo User](#item41)
 
 <a name="item1"></a>
 
@@ -581,17 +588,14 @@ php artisan make:component dom/Button
 </div>
 @break @default
 <button type="button" {{ $attributes->
-    merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}" @if(isset($route) && $type != 'modal')
-            onclick="{{ $route }}"
-        @endif
-        @if ($type == 'modal')
-            data-bs-toggle="modal" data-bs-target="#{{ $route }}"
-        @endif
-        @isset($tooltip) @if ($tooltip != null &&
-    $tooltip != '') data-bs-toggle="tooltip" data-bs-placement="{{
-    $tooltip['position'] }}" @isset($tooltip['class']) data-bs-custom-class="{{
-    $tooltip['class'] }}" @endisset data-bs-title="@lang($tooltip['text'])"
-    @endif @endisset> {{ $slot }}
+    merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}" @if(isset($route)
+    && $type != 'modal') onclick="{{ $route }}" @endif @if ($type == 'modal')
+    data-bs-toggle="modal" data-bs-target="#{{ $route }}" @endif
+    @isset($tooltip) @if ($tooltip != null && $tooltip != '')
+    data-bs-toggle="tooltip" data-bs-placement="{{ $tooltip['position'] }}"
+    @isset($tooltip['class']) data-bs-custom-class="{{ $tooltip['class'] }}"
+    @endisset data-bs-title="@lang($tooltip['text'])" @endif @endisset> {{ $slot
+    }}
 </button>
 @endswitch
 ```
@@ -868,27 +872,25 @@ public function __construct(
 > Abrir el archivo `alert.blade.php` en la ubicación `resources/views/components/messages/`
 
 ```html
+
 <x-messages.partials.icons />
-<div class="alert alert-{{ $type }} alert-dismissible fade show" role="alert">
-    @if ($icon)
-    <svg
-        class="bi flex-shrink-0 me-2"
-        width="24"
-        height="24"
-        role="img"
-        aria-label="{{ $type }}:"
-    >
-        <use xlink:href="#{{ $type }}-fill" />
-    </svg>
-    @endif {{ $slot }} @if ($close)
-    <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-    ></button>
+
+<div class="alert alert-{{ $type }} {{ ($close) ? 'alert-dismissible' : '' }} fade show" role="alert">
+    <div class="d-flex align-items-center mb-2">
+        @if ($icon)
+            <svg class="bi flex-shrink-0 me-2" width="48" height="48" role="img"
+                aria-label="{{ $type }}:">
+                <use xlink:href="#{{ $type }}-fill" />
+            </svg>
+        @endif
+        {{ $title ?? '' }}
+    </div>
+    {{ $slot }}
+    @if ($close)
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     @endif
 </div>
+
 ```
 
 [Subir](#top)
@@ -921,34 +923,52 @@ public function __construct(
 > Abrimos el archivo `toasts.blade.php` en la ubicación `resources/views/components/messages/` y escribimos:
 
 ```html
-
 <x-messages.partials.icons />
 
-<div class="toast {{ $type != 'info' ? 'text-white' : '' }} bg-{{ $type }}" role="alert" aria-live="assertive"
-    aria-atomic="true" data-bs-delay="{{ $delay }}" data-bs-autohide="{{ $autohide }}">
-    <div class="toast-header {{ $type != 'info' ? 'text-white' : '' }} bg-{{ $type }}">
+<div
+    class="toast {{ $type != 'info' ? 'text-white' : '' }} bg-{{ $type }}"
+    role="alert"
+    aria-live="assertive"
+    aria-atomic="true"
+    data-bs-delay="{{ $delay }}"
+    data-bs-autohide="{{ $autohide }}"
+>
+    <div
+        class="toast-header {{ $type != 'info' ? 'text-white' : '' }} bg-{{ $type }}"
+    >
         @if ($icon)
-            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img"
-                aria-label="{{ ucfirst($type) }} :">
-                <use xlink:href="#{{ $type }}-fill" />
-            </svg>
+        <svg
+            class="bi flex-shrink-0 me-2"
+            width="24"
+            height="24"
+            role="img"
+            aria-label="{{ ucfirst($type) }} :"
+        >
+            <use xlink:href="#{{ $type }}-fill" />
+        </svg>
         @endif
         <strong class="me-auto">@lang(ucfirst($title))</strong>
-        <small id="date_toast" class="{{ $type != 'info' ? 'text-white' : '' }}"></small>
-        <button id="close_toats" type="button" class="btn-close {{ $type != 'info' ? 'btn-close-white' : '' }}"
-            aria-label="Close"></button>
+        <small
+            id="date_toast"
+            class="{{ $type != 'info' ? 'text-white' : '' }}"
+        ></small>
+        <button
+            id="close_toats"
+            type="button"
+            class="btn-close {{ $type != 'info' ? 'btn-close-white' : '' }}"
+            aria-label="Close"
+        ></button>
     </div>
-    <div class="toast-body">
-        {{ $slot }}
-    </div>
+    <div class="toast-body">{{ $slot }}</div>
     @if ($autohide == 'true')
-        <div class="progress rounded-bottom justify-content-end bg-gray-400" style="height: 7px;">
-            <div class="progress-bar bg-{{ $type }}" role="progressbar"></div>
-        </div>
+    <div
+        class="progress rounded-bottom justify-content-end bg-gray-400"
+        style="height: 7px;"
+    >
+        <div class="progress-bar bg-{{ $type }}" role="progressbar"></div>
+    </div>
     @endif
 </div>
-
-
 ```
 
 > Creamos el archivo `toasts.scss` en la ubicación `resources/scss/` y escribimos:
@@ -1007,7 +1027,6 @@ public function __construct(
 > Creamos el archivo `toasts.js` en la ubicación `resources/js/` y escribimos:
 
 ```js
-
 $(function () {
     $(".toast").toast("show");
 });
@@ -1040,43 +1059,39 @@ $("#close_toats").on("click", function () {
 $(".toast").on("hidden.bs.toast", function () {
     $(this).addClass("close-toast");
 });
-
-
 ```
 
 > [!IMPORTANT]
-> Y importamos los archivos creados el css  `@import "./toasts"` en  `app.scss` y el otro `import "toasts.js"` en  `app.js`
+> Y importamos los archivos creados el css `@import "./toasts"` en `app.scss` y el otro `import "toasts.js"` en `app.js`
 
 > Creamos el archivo `toasts.blade.php` en la ubicación `resources/views/messages/` y escribimos:
 
 ```html
-
 @if (session('message'))
-    <div class="toast-container position-absolute {{ session('message')['position'] ?? 'top-0 end-0' }} p-3">
-        <x-messages.toasts type="{{ session('message')['type'] ?? 'info' }}"
-            delay="{{ session('message')['delay'] ?? '5000' }}" :autohide="session('message')['autohide'] ?? 'true'" :icon="session('message')['icon'] ?? true">
-            <x-slot:title>
-                {{ session('message')['title'] ?? '' }}
-            </x-slot:title>
-            {{ session('message')['message'] ?? '' }}
-        </x-messages.toasts>
-    </div>
+<div
+    class="toast-container position-absolute {{ session('message')['position'] ?? 'top-0 end-0' }} p-3"
+>
+    <x-messages.toasts
+        type="{{ session('message')['type'] ?? 'info' }}"
+        delay="{{ session('message')['delay'] ?? '5000' }}"
+        :autohide="session('message')['autohide'] ?? 'true'"
+        :icon="session('message')['icon'] ?? true"
+    >
+        <x-slot:title> {{ session('message')['title'] ?? '' }} </x-slot:title>
+        {{ session('message')['message'] ?? '' }}
+    </x-messages.toasts>
+</div>
 @endif
-
-
 ```
 
 > Abrimos el archivo `plantilla.blade.php` ubicado en `resources/views/layouts/` añadimos el componente toasts
 
 ```html
-
 <body class="body">
     <x-layouts.header />
-    @include('messages.toasts')
-    @yield('content')
+    @include('messages.toasts') @yield('content')
     <x-layouts.footer />
 </body>
-
 ```
 
 [Subir](#top)
@@ -1104,17 +1119,13 @@ php artisan make:component dom.card --view
 > Abrimos el archivo `card.blade.php` en la ubicación `resources/views/components/dom/` y escribimos:
 
 ```html
-
 @props(['class' => ''])
 
-<div {{ $attributes->class(['card ' . $class]) }}>
-    {{ $header ?? '' }}
-    <div class="card-body">
-        {{ $slot }}
-    </div>
+<div {{ $attributes->
+    class(['card ' . $class]) }}> {{ $header ?? '' }}
+    <div class="card-body">{{ $slot }}</div>
     {{ $footer ?? '' }}
 </div>
-
 ```
 
 [Subir](#top)
@@ -1159,14 +1170,10 @@ public function __construct(
 ```html
 
 @if ($label)
-    <label for="{{ $id ?? '' }}" class="ms-1">
-        @lang($label)
-    </label>
-@endif
-
-@switch($type)
-    @case('textarea')
-        <textarea type="textarea" name="{{ $name }}" {{ $attributes->merge(['class' => "form-control $class"]) }} placeholder="{{ $placeholder }}" clo="{{ $col }}" rows="{{ $rows }}"
+<label for="{{ $id ?? '' }}" class="ms-1"> @lang($label) </label>
+@endif @switch($type) @case('textarea')
+<textarea type="textarea" name="{{ $name }}" {{ $attributes->
+merge(['class' => "form-control $class"]) }} placeholder="{{ $placeholder }}" clo="{{ $col }}" rows="{{ $rows }}"
         @if ($readonly)
             @readonly(true)
         @endif
@@ -1178,22 +1185,13 @@ public function __construct(
         @endif
         >
             {{ old($name, $slot) }}
-        </textarea>
-    @break
-
-    @default
-        <input type="{{ $type }}" name="{{ $name }}" {{ $attributes->merge(['class' => "form-control $class"]) }} placeholder="{{ $placeholder }}" value="{{ old($name, $value) }}"
-        @if ($readonly)
-            @readonly(true)
-        @endif
-        @if ($disabled)
-            @disabled(true)
-        @endif
-        @if ($form)
-            form="{{ $form }}"
-        @endif
-        >
-@endswitch
+        </textarea
+>
+@break @default
+<input type="{{ $type }}" name="{{ $name }}" {{ $attributes- />merge(['class' =>
+"form-control $class"]) }} placeholder="{{ $placeholder }}" value="{{ old($name,
+$value) }}" @if ($readonly) @readonly(true) @endif @if ($disabled)
+@disabled(true) @endif @if ($form) form="{{ $form }}" @endif > @endswitch
 
 ```
 
@@ -1256,7 +1254,6 @@ public function __construct(
 > Creamos el archivo `functions.js` en la ubicación `resources/js/` lo abrimos y escribimos:
 
 ```js
-
 // Función que valida los formularios.
 function validateForm(e) {
     let form = $(e.target);
@@ -1289,13 +1286,10 @@ window.validateForm = validateForm;
 
 // Función que activa o desactiva el botón del formulario.
 $("form, input, select, textarea").on("change", function (e) {
-
     let btn = null;
     let form = $(e.target).parents("form")[0];
 
-
     if (form == undefined) {
-
         form = $("#" + $(e.target).attr("form"));
     }
 
@@ -1306,13 +1300,9 @@ $("form, input, select, textarea").on("change", function (e) {
         });
 
     if ($(e.target).val() === "") {
-
         $(btn).addClass("disabled");
-
     } else {
-
         $(btn).removeClass("disabled");
-
     }
 
     $(form)
@@ -1323,13 +1313,11 @@ $("form, input, select, textarea").on("change", function (e) {
                 return false;
             }
         });
-
 });
-
 ```
 
 > [!IMPORTANT]
-> Y importamos el archivo `import "./functions";"` en  `app.js`
+> Y importamos el archivo `import "./functions";"` en `app.js`
 
 [Subir](#top)
 
@@ -1368,34 +1356,49 @@ public function __construct(
 > Abrimos el archivo `modal.blade.php` en la ubicación `resources/views/components/dom/` y escribimos:
 
 ```html
-
-<div id="{{ $id }}" class="modal fade" tabindex="-1" aria-hidden="true"
-    @if ($static) data-bs-backdrop="static" data-bs-keyboard="false" @endif>
-    <div class="modal-dialog {{ $centered ? 'modal-dialog-centered' : '' }} {{ $scrollable ? 'modal-dialog-scrollable' : '' }}">
+<div
+    id="{{ $id }}"
+    class="modal fade"
+    tabindex="-1"
+    aria-hidden="true"
+    @if
+    ($static)
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    @endif
+>
+    <div
+        class="modal-dialog {{ $centered ? 'modal-dialog-centered' : '' }} {{ $scrollable ? 'modal-dialog-scrollable' : '' }}"
+    >
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">{{ $title }}</h5>
                 @if ($close)
-                    <x-dom.button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Close"></x-dom.button>
+                <x-dom.button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></x-dom.button>
                 @endif
             </div>
-            <div class="modal-body">
-                {{ $slot }}
-            </div>
+            <div class="modal-body">{{ $slot }}</div>
             @if ($footer)
-                <div class="modal-footer">
-                    @if ($close)
-                        <x-dom.button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                            aria-label="Close">Close</x-dom.button>
-                    @endif
-                    {{ $footer }}
-                </div>
+            <div class="modal-footer">
+                @if ($close)
+                <x-dom.button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                    >Close</x-dom.button
+                >
+                @endif {{ $footer }}
+            </div>
             @endif
         </div>
     </div>
 </div>
-
 ```
 
 [Subir](#top)
@@ -1408,48 +1411,65 @@ public function __construct(
 
 ```console
 
-php artisan make:component auth.singup.partials.form --view
+php artisan make:component auth.singup.form --view
 
-php artisan make:component auth.singup.partials.card --view
+php artisan make:component auth.singup.card --view
 
-php artisan make:component auth.singup.partials.modal --view
+php artisan make:component auth.singup.modal --view
 
 ```
 
 > Abrimos el archivo `form.blade.php` en la ubicación `resources/view/components/auth/singup/partials/` y escribimos:
 
 ```html
-
 <div class="grid align-items-center" style="--bs-gap: 1rem;">
     <div class="g-col-12">
-        <x-dom.input type="text" label="Name" name="name" placeholder="You Name or Username" form="form_register" />
+        <x-dom.input
+            type="text"
+            label="Name"
+            name="name"
+            placeholder="You Name or Username"
+            form="form_register"
+        />
     </div>
     <div class="g-col-12">
-        <x-dom.input type="email" name="email" label="Email address" placeholder="You Email address"
-            form="form_register" />
+        <x-dom.input
+            type="email"
+            name="email"
+            label="Email address"
+            placeholder="You Email address"
+            form="form_register"
+        />
     </div>
     <div class="g-col-12">
-        <x-dom.input type="password" name="password" label="Password" placeholder="You Password" form="form_register" />
+        <x-dom.input
+            type="password"
+            name="password"
+            label="Password"
+            placeholder="You Password"
+            form="form_register"
+        />
     </div>
     <div class="g-col-12">
-        <x-dom.input type="password" label="Password Confirmation" name="password_confirmation"
-            placeholder="You Confirmation Password" form="form_register" />
+        <x-dom.input
+            type="password"
+            label="Password Confirmation"
+            name="password_confirmation"
+            placeholder="You Confirmation Password"
+            form="form_register"
+        />
     </div>
 </div>
-
 ```
 
 > Abrimos el archivo `card.blade.php` en la ubicación `resources/view/components/auth/singup/partials/` y escribimos:
 
 ```html
-
 <x-dom.card>
     <x-slot:header>
-        <div class="card-header">
-            Sing Up
-        </div>
+        <div class="card-header">Sing Up</div>
     </x-slot:header>
-    <x-auth.singup.partials.form />
+    <x-auth.singup.form />
     <x-slot:footer>
         <div class="card-footer d-flex justify-content-end">
             <x-dom.form id="form_register">
@@ -1460,18 +1480,14 @@ php artisan make:component auth.singup.partials.modal --view
         </div>
     </x-slot:footer>
 </x-dom.card>
-
 ```
 
 > Abrimos el archivo `modal.blade.php` en la ubicación `resources/view/components/auth/singup/partials/` y escribimos:
 
 ```html
-
 <x-dom.modal id="singup" :centered="true" class="modal-fullscreen-md-down">
-    <x-slot:title>
-        @lang('Sing Up')
-    </x-slot:title>
-    <x-auth.singup.partials.form/>
+    <x-slot:title> @lang('Sing Up') </x-slot:title>
+    <x-auth.singup.form />
     <x-slot:footer>
         <x-dom.form id="form_register">
             <x-dom.button type="submit" class="btn-primary disabled">
@@ -1480,7 +1496,6 @@ php artisan make:component auth.singup.partials.modal --view
         </x-dom.form>
     </x-slot:footer>
 </x-dom.modal>
-
 ```
 
 > Abrimos el archivo `link_nav.json` en la ubicación `storage/app/config` y creamos una nueva lista.
@@ -1508,12 +1523,11 @@ php artisan make:component auth.singup.partials.modal --view
 }
 ```
 
-
 > Abrimos el archivo `header.blade.php` en la ubicación `resources/view/components/layouts/` y escribimos:
 
 ```html
 
-    <x-nav.links name="links" />
+<x-nav.links name="links" />
 @guest
     <x-nav.links name="login" />
 @endguest
@@ -1523,27 +1537,25 @@ php artisan make:component auth.singup.partials.modal --view
 > Abrimos el archivo `welcome.blade.php` en la ubicación `resources/view/` y añadimos:
 
 ```html
-
-<x-auth.singup.partials.modal/>
-
+<x-auth.singup.modal />
 ```
 
 > Creamos el archivo `register.blade.php` en la ubicación `resources/view/auth/` y añadimos:
 
 ```html
-
-@extends('layouts.plantilla')
-@section('title', trans('Sign Up'))
+@extends('layouts.plantilla') @section('title', trans('Sign Up'))
 @section('content')
-    <main class="container-fluid">
-        <div class="grid align-items-center" style="--bs-columns: 3; --bs-gap: 1rem;">
-            <div class="g-col-3 g-col-lg-1 g-start-lg-2">
-                <x-auth.singup.partials.card />
-            </div>
+<main class="container-fluid">
+    <div
+        class="grid align-items-center"
+        style="--bs-columns: 3; --bs-gap: 1rem;"
+    >
+        <div class="g-col-3 g-col-lg-1 g-start-lg-2">
+            <x-auth.singup.card />
         </div>
-    </main>
+    </div>
+</main>
 @endsection
-
 ```
 
 [Subir](#top)
@@ -1556,59 +1568,74 @@ php artisan make:component auth.singup.partials.modal --view
 
 ```console
 
-php artisan make:component auth.singin.partials.form --view
+php artisan make:component auth.singin.form --view
 
-php artisan make:component auth.singin.partials.card --view
+php artisan make:component auth.singin.card --view
 
-php artisan make:component auth.singin.partials.modal --view
+php artisan make:component auth.singin.modal --view
 
 ```
 
 > Abrimos el archivo `form.blade.php` en la ubicación `resources/view/components/auth/singin/partials/` y escribimos:
 
 ```html
-
 <div class="grid align-items-center" style="--bs-gap: 1rem;">
     <div class="g-col-12">
-        <x-dom.input type="email" name="email" label="Email address" placeholder="You Email address"
-            form="form_register" />
+        <x-dom.input
+            type="email"
+            name="email"
+            label="Email address"
+            placeholder="You Email address"
+            form="form_login"
+        />
     </div>
     <div class="g-col-12">
         <div class="d-flex justify-content-between">
             <label class="align-self-center" for="">@lang('Password')</label>
-            <x-dom.button type='modal' class="btn-sm me-1 btn-link" name="forgot-password">
+            <x-dom.button
+                type="modal"
+                class="btn-sm me-1 btn-link"
+                name="forgot-password"
+            >
                 @lang('Forgot Your Password?')
             </x-dom.button>
         </div>
-        <x-dom.input type="password" name="password" placeholder="You Password" form="form_register" />
+        <x-dom.input
+            type="password"
+            name="password"
+            placeholder="You Password"
+            form="form_login"
+        />
     </div>
     <div class="g-col-12 text-center">
         <div class="form-check form-switch d-flex justify-content-center">
-            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" name="remember" form="form_register">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="flexSwitchCheckDefault"
+                name="remember"
+                form="form_login"
+            />
             <label class="form-check-label ms-1" for="flexSwitchCheckDefault">
                 @lang('Remember Me')
             </label>
         </div>
     </div>
 </div>
-
-
 ```
 
 > Abrimos el archivo `card.blade.php` en la ubicación `resources/view/components/auth/singin/partials/` y escribimos:
 
 ```html
-
 <x-dom.card>
     <x-slot:header>
-        <div class="card-header">
-            Sing In
-        </div>
+        <div class="card-header">Sing In</div>
     </x-slot:header>
-    <x-auth.singin.partials.form />
+    <x-auth.singin.form />
     <x-slot:footer>
         <div class="card-footer d-flex justify-content-end">
-            <x-dom.form id="form_register">
+            <x-dom.form id="form_login">
                 <x-dom.button type="submit" class="btn-primary disabled">
                     @lang('Sing In')
                 </x-dom.button>
@@ -1616,19 +1643,14 @@ php artisan make:component auth.singin.partials.modal --view
         </div>
     </x-slot:footer>
 </x-dom.card>
-
-
 ```
 
 > Abrimos el archivo `modal.blade.php` en la ubicación `resources/view/components/auth/singin/partials/` y escribimos:
 
 ```html
-
 <x-dom.modal id="singin" :centered="true" class="modal-fullscreen-md-down">
-    <x-slot:title>
-        @lang('Sing In')
-    </x-slot:title>
-    <x-auth.singin.partials.form/>
+    <x-slot:title> @lang('Sing In') </x-slot:title>
+    <x-auth.singin.form />
     <x-slot:footer>
         <x-dom.form id="form_register">
             <x-dom.button type="submit" class="btn-primary disabled">
@@ -1637,7 +1659,6 @@ php artisan make:component auth.singin.partials.modal --view
         </x-dom.form>
     </x-slot:footer>
 </x-dom.modal>
-
 ```
 
 > Abrimos el archivo `link_nav.json` en la ubicación `storage/app/config` y creamos una nueva lista.
@@ -1668,6 +1689,15 @@ php artisan make:component auth.singin.partials.modal --view
             "route": "singup",
             "class": "nav-link"
         }
+    },
+    "auth_login" : {
+        "logout" : {
+            "name": "Logout",
+            "slug": "logout",
+            "type": "link",
+            "route": "logout",
+            "class": "nav-link"
+        }
     }
 }
 ```
@@ -1675,28 +1705,769 @@ php artisan make:component auth.singin.partials.modal --view
 > Abrimos el archivo `welcome.blade.php` en la ubicación `resources/view/` y añadimos:
 
 ```html
-
-<x-auth.singin.partials.modal />
-
+<x-auth.singin.modal />
 ```
 
 > Creamos el archivo `login.blade.php` en la ubicación `resources/view/auth/` y añadimos:
 
 ```html
+@extends('layouts.plantilla') @section('title', trans('Sign In'))
+@section('content')
+<main class="container-fluid">
+    <div
+        class="grid align-items-center"
+        style="--bs-columns: 3; --bs-gap: 1rem;"
+    >
+        <div class="g-col-3 g-col-lg-1 g-start-lg-2">
+            <x-auth.singin.card />
+        </div>
+    </div>
+</main>
+@endsection
+```
+
+[Subir](#top)
+
+<a name="item34"></a>
+
+### Controlador de de autentificación
+
+> Typee: en la Consola:
+
+```console
+
+php artisan make:controller Auth/AuthenticationController
+
+php artisan make:request Auth/LoginRequest
+
+php artisan make:request Auth/RegisterRequest
+
+```
+
+> Abrimos el archivo `AuthenticationController.php` ubicado en `app/Http/Controllers/Auth/`
+
+```php
+
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
+
+class AuthenticationController extends Controller
+{
+    /**
+     * This function returns a view for the registration page.
+     *
+     * @return A view named "auth.register" is being returned.
+     */
+    public function register()
+    {
+        return view('auth.register');
+    }
+    /**
+     * The function returns a view for the login page in a PHP web application.
+     *
+     * @return A view named "auth.login" is being returned.
+     */
+    public function login()
+    {
+        return view('auth.login');
+    }
+    /**
+     * This function registers a user, logs them in, and redirects them to the dashboard or displays an
+     * error message if there is an issue.
+     *
+     * @param RegisterRequest request The  parameter is an instance of the RegisterRequest
+     * class, which is a custom request class that contains validation rules and messages for the
+     * registration form data. It is used to validate and sanitize the user input before creating a new
+     * user record in the database.
+     *
+     * @return a redirect response to either the 'dashboard' route if the user's credentials are
+     * correct and they are successfully authenticated, or back to the previous page with a message
+     * indicating that the registration failed and providing an error message.
+     */
+    public function registered(RegisterRequest $request)
+    {
+        try {
+            $user = User::create($request->safe()->except(['password_confirmation']));
+            event(new Registered($user)); // ! Comentar esta linea hasta que se configure la validación de email.
+            $credentials = $request->safe()->only('email', 'password');
+            if (Auth::attempt($credentials)) {
+                $request->session()->regenerate();
+                return redirect()->intended('/')->with('message', [
+                    'type' => 'success',
+                    'title' => Lang::get('You have registered') . '!',
+                    'message' => Lang::get('Before proceeding, please check your email for a verification link.'),
+                ]);;
+            }
+            return redirect()
+                ->back()
+                ->with('message', [
+                    'type' => 'danger',
+                    'title' => Lang::get('An unexpected error has occurred') . '!',
+                    'message' => Lang::get('Check your settings and if the problem persists, contact your administrator.'),
+                ]);
+        } catch (\Throwable $th) {
+            return back()->with('message', [
+                'type' => 'danger',
+                'title' => Lang::get('An unexpected error has occurred') . '!',
+                'message' => Lang::get('Check your settings and if the problem persists, contact your administrator.'),
+            ]);
+        }
+    }
+    /**
+     * This function handles user authorization by checking their login credentials and redirecting
+     * them to the dashboard if successful, or displaying an error message if the credentials are
+     * incorrect.
+     *
+     * @param LoginRequest request  is an instance of the LoginRequest class, which is a custom
+     * request class that extends the base Laravel request class. It contains the input data from the
+     * login form submitted by the user.
+     *
+     * @return This function returns a redirect response to either the 'dashboard' page if the user's
+     * credentials are correct, or back to the previous page with an error message if the credentials
+     * are incorrect.
+     */
+    public function Authorization(LoginRequest $request)
+    {
+        try {
+            $credentials = $request->safe()->only('email', 'password');
+            if (Auth::attempt($credentials, $request->safe()->only('remember'))) {
+                $request->session()->regenerate();
+                return redirect()->intended('/');
+            }
+            return redirect()
+                ->back()
+                ->with('message', [
+                    'type' => 'danger',
+                    'title' => Lang::get('auth.denied') . '!',
+                    'message' => Lang::get('auth.failed'),
+                ]);
+        } catch (\Throwable $th) {
+            return back()->with('message', [
+                'type' => 'danger',
+                'title' => Lang::get('An unexpected error has occurred') . '!',
+                'message' => Lang::get('Check your settings and if the problem persists, contact your administrator.'),
+            ]);
+        }
+    }
+    /**
+     * This PHP function logs out the user, invalidates the session, regenerates the session token, and
+     * redirects to the welcome page.
+     *
+     * @param Request request  is an instance of the Illuminate\Http\Request class which
+     * represents an HTTP request. It contains information about the request such as the HTTP method,
+     * headers, and input data. In this context, it is used to invalidate the user's session and
+     * regenerate a new CSRF token after logging out the user.
+     *
+     * @return a redirect response to the 'welcome' route after logging out the authenticated user,
+     * invalidating the session and regenerating the CSRF token.
+     */
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('welcome');
+    }
+}
+
+```
+
+> Abrimos el archivo `LoginRequest.php` ubicado en `app/Http/Requests/Auth/`
+
+```php
+
+<?php
+
+namespace App\Http\Requests\Auth;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Lang;
+
+class LoginRequest extends FormRequest
+{
+    protected $errorBag = 'login';
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'email' => 'required|email',
+            'password' => 'required',
+            'remember' => 'string'
+        ];
+    }
+
+    /**
+     * The function returns an array of attributes with their corresponding lowercase translations.
+     *
+     * @return An array of attributes with keys "Email" and "Password" and their corresponding values
+     * obtained by converting the language strings "Email" and "Password" to lowercase using the Lang
+     * facade.
+     */
+    public function attributes()
+    {
+        return [
+            "email" => strtolower(Lang::get('Email')),
+            "password" => strtolower(Lang::get('Password')),
+        ];
+    }
+}
+
+```
+
+> Abrimos el archivo `RegisterRequest.php` ubicado en `app/Http/Requests/Auth/`
+
+```php
+
+<?php
+
+namespace App\Http\Requests\Auth;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Hash;
+
+class RegisterRequest extends FormRequest
+{
+    protected $errorBag = 'register';
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'name' => 'required|string|min:3',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|confirmed',
+            'password_confirmation' => 'required'
+        ];
+    }
+
+    /**
+     * Handle a passed validation attempt.
+     */
+    protected function passedValidation(): void
+    {
+        $this->replace(['password' => Hash::make($this->password)]);
+    }
+
+    public function attributes()
+    {
+        return [
+            "name" => strtolower(Lang::get('Name')),
+            "email" => strtolower(Lang::get('Email')),
+            "password" => strtolower(Lang::get('Password')),
+            "password_confirmation" => strtolower(Lang::get('Password Confirmation')),
+        ];
+    }
+}
+
+```
+
+[Subir](#top)
+
+<a name="item35"></a>
+
+### Rutas de autentificación
+
+> Creamos el archivo `auth.php` en la ubicación `routes` y escribimos.
+
+```php
+
+<?php
+
+use App\Http\Controllers\Auth\AuthenticationController;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register Authentication routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "Authentication" middleware group. Make something great!
+|
+*/
+Route::controller(AuthenticationController::class)->group(function () {
+    Route::get('register', 'register')->name('register');
+    Route::get('login', 'login')->name('login');
+    Route::post('register', 'registered')->name('register');
+    Route::post('login', 'Authorization')->name('login');
+    Route::get('logout', 'logout')->name('logout')->middleware(['auth', 'auth.session']);
+});
+
+
+```
+
+> [!IMPORTANT]
+> Importamos `require('auth.php');` en el archivo `web.php` ubicado en `routes`
+
+> Abrimos el archivo `header.blade.php` en la ubicación `resources/view/components/layouts/` y escribimos:
+
+```html
+
+<x-nav.links name="links" />
+@guest
+    <x-nav.links name="login" />
+@endguest
+@auth
+    <x-nav.links name="auth_login" />
+@endauth
+
+```
+
+[Subir](#top)
+
+<a name="item36"></a>
+
+### Validaciones de formularios
+
+> Abrimos el archivo `input.blade.php` en la ubicación `resources/views/components/dom/` y escribimos:
+
+```html
+
+{{-- Configuración de los labels --}}
+@if ($label)
+    @if (!empty($errors->getBags()))
+        @foreach ( $errors->getBags() as $key => $val )
+            @if ($errors->$key->get($name))
+                <div class="d-flex justify-content-between">
+                    <label for="{{ $id ?? '' }}" class="ms-1">
+                        @lang($label)
+                    </label>
+                    <small id="message_errors" class="text-danger">*{{ $errors->$key->first($name) }}</small>
+                </div>
+            @else
+                <label for="{{ $id ?? '' }}" class="ms-1">
+                    @lang($label)
+                </label>
+            @endif
+        @endforeach
+    @else
+        @error($name)
+            <div class="d-flex justify-content-between">
+                <label for="{{ $id ?? '' }}" class="ms-1">
+                    @lang($label)
+                </label>
+                <small id="message_errors" class="text-danger">*{{ $message }}</small>
+            </div>
+        @else
+            <label for="{{ $id ?? '' }}" class="ms-1">
+                @lang($label)
+            </label>
+        @enderror
+    @endif
+@endif
+
+{{-- Tipos de inputs --}}
+@switch($type)
+    @case('textarea')
+        <textarea type="textarea" name="{{ $name }}"
+        @if (!empty($errors->getBags()))
+            @foreach ( $errors->getBags() as $key => $val )
+                @if ($errors->$key->get($name))
+                    {{ $attributes->merge(['class' => "form-control is-invalid"]) }}
+                @endif
+            @endforeach
+        @else
+            @error($name)
+                {{ $attributes->merge(['class' => "form-control is-invalid"]) }}
+            @enderror
+        @endif
+         {{ $attributes->merge(['class' => "form-control $class"]) }} placeholder="{{ $placeholder }}" clo="{{ $col }}" rows="{{ $rows }}"
+        @if ($readonly)
+            @readonly(true)
+        @endif
+        @if ($disabled)
+            @disabled(true)
+        @endif
+        @if ($form)
+            form="{{ $form }}"
+        @endif
+        >
+            {{ old($name, $slot) }}
+        </textarea>
+    @break
+
+    @default
+        <input type="{{ $type }}" name="{{ $name }}"
+        @if (!empty($errors->getBags()))
+            @foreach ( $errors->getBags() as $key => $val )
+                @if ($errors->$key->get($name))
+                    {{ $attributes->merge(['class' => "form-control is-invalid"]) }}
+                @endif
+            @endforeach
+        @else
+            @error($name)
+                {{ $attributes->merge(['class' => "form-control is-invalid"]) }}
+            @enderror
+        @endif
+        {{ $attributes->merge(['class' => "form-control $class"]) }} placeholder="{{ $placeholder }}" value="{{ old($name, $value) }}"
+        @if ($readonly)
+            @readonly(true)
+        @endif
+        @if ($disabled)
+            @disabled(true)
+        @endif
+        @if ($form)
+            form="{{ $form }}"
+        @endif
+        >
+@endswitch
+
+{{-- Si no hay label mostramos el error debajo  --}}
+@if (!$label)
+    @foreach ( $errors->getBags() as $key => $val )
+        @if ($errors->$key->get($name))
+            <div class="d-flex">
+                <small id="message_errors" class="text-danger">*{{ $errors->$key->first($name) }}</small>
+            </div>
+        @endif
+    @endforeach
+    @error($name)
+        <div class="d-flex">
+            <small id="message_errors" class="text-danger">*{{ $message }}</small>
+        </div>
+    @enderror
+@endif
+
+```
+
+> [!TIP]
+> Podemos configurar según las necesidades, he optado por utilizar los labels para mostrar el mensaje de error.
+
+> Abrimos el archivo `modal.blade.php` en la ubicación `resources/view/components/auth/singup/partials/` y añadimos al final:
+
+```html
+
+@if ($errors->register->any())
+    <script type="module">
+        $('#singup').modal('show');
+        $("#singin").find('#message_errors').each(function() {
+            $(this).hide();
+        });
+        $("#singin").find('input').each(function() {
+            $(this).removeClass('is-invalid');
+            $(this).val('');
+        });
+    </script>
+@endif
+
+```
+
+> Abrimos el archivo `modal.blade.php` en la ubicación `resources/view/components/auth/singin/partials/` y añadimos al final:
+
+```html
+
+@if ($errors->login->any())
+    <script type="module">
+        $('#singin').modal('show');
+        $("#singup").find('#message_errors').each(function() {
+            $(this).hide();
+        });
+        $("#singup").find('input').each(function() {
+            $(this).removeClass('is-invalid');
+            $(this).val('');
+        });
+    </script>
+@endif
+
+```
+
+[Subir](#top)
+
+<a name="item37"></a>
+
+### Verificación de emails
+
+> [!IMPORTANT]
+> Hay que configurar el servidor de envío en el archivo `.env`
+
+<a name="item38"></a>
+
+#### Crear request de verificación
+
+> Typee: en la Consola:
+
+```console
+
+php artisan make:request Auth/Mails/EmailVerificationRequest
+
+```
+> Abrimos el archivo `EmailVerificationRequest.php` ubicado en `app/Http/Requests/Auth/Mails` y escribimos:
+
+```php
+
+<?php
+
+namespace App\Http\Requests\Auth\Mails;
+
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
+
+class EmailVerificationRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        if (
+            !hash_equals(
+                (string) $this->user()->getKey(),
+                (string) $this->query('id')
+            )
+        ) {
+            return false;
+        }
+
+        if (
+            !hash_equals(
+                sha1($this->user()->getEmailForVerification()),
+                (string) $this->query('hash')
+            )
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     */
+    public function rules(): array
+    {
+        return [
+                //
+            ];
+    }
+    /**
+     * Fulfill the email verification request.
+     *
+     * @return void
+     */
+    public function fulfill()
+    {
+        if (!$this->user()->hasVerifiedEmail()) {
+            $this->user()->markEmailAsVerified();
+
+            event(new Verified($this->user()));
+        }
+    }
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator(Validator $validator)
+    {
+        return $validator;
+    }
+}
+
+
+```
+
+[Subir](#top)
+
+<a name="item39"></a>
+
+#### Rutas de verificación email
+
+> Creamos el archivo `verify_routes.php` en la ubicación `routes` y escribimos.
+
+```php
+
+<?php
+
+use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use App\Http\Requests\Auth\Mails\EmailVerificationRequest;
+
+/*
+|--------------------------------------------------------------------------
+| Email Verify Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register Email Verify routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "Email Verify" middleware group. Make something great!
+|
+*/
+
+Route::get('/email/verify', function () {
+    return view('auth.mails.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verification', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect()->intended('/');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    try {
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('message', [
+            'type' => 'success',
+            'title' => Lang::get('Notification sent') . '!',
+            'message' => Lang::get('The link to verify your email address has been sent. Check your inbox.'),
+        ]);
+    } catch (\Throwable $th) {
+        return back()->with('message', [
+            'type' => 'danger',
+            'title' => Lang::get('An unexpected error has occurred') . '!',
+            'message' => Lang::get('Check your settings and if the problem persists, contact your administrator.'),
+        ]);
+    }
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+```
+
+> [!IMPORTANT]
+> Importamos `require('verify_routes.php');` en el archivo `web.php` ubicado en `routes`
+
+<a name="item40"></a>
+
+#### Vista de verificación email
+
+> Creamos el archivo `verify-email.blade.php` en la ubicación `resources/views/auth/mails/` y escribimos.
+
+```html
 
 @extends('layouts.plantilla')
-@section('title', trans('Sign In'))
+
+@section('title', 'Email verify')
+
 @section('content')
-    <main class="container-fluid">
-        <div class="grid align-items-center" style="--bs-columns: 3; --bs-gap: 1rem;">
-            <div class="g-col-3 g-col-lg-1 g-start-lg-2">
-                <x-auth.singin.partials.card />
+    <main class="container-fluid d-flex align-content-center">
+        <div class="grid align-items-center justify-self-center" style="--bs-columns: 3; --bs-gap: 1rem;">
+            <div class="g-col-3 g-col-md-1 g-start-md-2">
+                <x-messages.alert type="warning" :close="false">
+                    <x-slot:title>
+                        <h4>@lang('Verify Your Email Address')!</h4>
+                    </x-slot:title>
+                    <x-dom.form :action="route('verification.send')" method="post" :valid="false">
+                        <p><strong>@lang('Verify Email Address')</strong> @lang('Before proceeding, please check your email for a verification link.')</p>
+                        <hr>
+                        <p class="mb-0">@lang('If you did not receive the email')
+                            @lang('click here to request another'),
+                            <button class="btn btn-outline-warning"type="submit">@lang('Send new notification for email verification')
+                            </button>
+                        </p>
+                        <strong>@lang('The link will expire in :count minutes.', ['count' => '60'])</strong>
+                    </x-dom.form>
+                </x-messages.alert>
             </div>
         </div>
     </main>
 @endsection
 
 ```
+
+[Subir](#top)
+
+<a name="item41"></a>
+
+#### Configuración del modelo User
+
+> [!IMPORTANT]
+> Es muy importante en que se configure el modelo user para que funcione la verificación de email.
+
+> Abrimos el archivo `User.php` en la ubicación `app/Models/` y escribimos.
+
+```php
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+
+class User extends Authenticatable implements MustVerifyEmail
+{
+    use HasApiTokens, HasFactory, Notifiable;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+}
+
+```
+
+> [!WARNING]
+> `MustVerifyEmail y Notifiable son muy importantes para el envío y para proteger las rutas.
 
 [Subir](#top)
 

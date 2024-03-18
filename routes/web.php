@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+require('auth.php');
+require('verify_routes.php');
+
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
+
+Route::group(
+    ['middleware' => ['auth', 'auth.session', 'verified']],
+    function () {
+        Route::get('cursos', function (){
+            dd("hola");
+        });
+    }
+);

@@ -4,7 +4,7 @@
             Sing In
         </div>
     </x-slot:header>
-    <x-auth.singin.partials.form />
+    <x-auth.singin.form />
     <x-slot:footer>
         <div class="card-footer d-flex justify-content-end">
             <x-dom.form id="form_register">

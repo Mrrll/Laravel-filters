@@ -5,7 +5,7 @@
 @section('content')
     <main class="container-fluid ">
         <h1>Welcome</h1>
-        <x-auth.singup.partials.modal />
-        <x-auth.singin.partials.modal />
+        <x-auth.singup.modal />
+        <x-auth.singin.modal />
     </main>
 @endsection

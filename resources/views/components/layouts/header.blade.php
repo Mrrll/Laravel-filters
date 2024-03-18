@@ -7,10 +7,15 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+                <x-nav.links name="links" />
                 @guest
-                    <x-nav.links name="links" />
                     <x-nav.links name="login" />
                 @endguest
+                @auth
+                    <x-dom.form :action="route('logout')" :valid="false">
+                        <x-nav.links name="auth_login" />
+                    </x-dom.form>
+                @endauth
             </div>
         </div>
     </nav>
