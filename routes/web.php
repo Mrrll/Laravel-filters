@@ -21,12 +21,3 @@ require('forgot_password.php');
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
-
-Route::group(
-    ['middleware' => ['auth', 'auth.session', 'verified']],
-    function () {
-        Route::get('cursos', function (){
-            dd("hola");
-        });
-    }
-);
