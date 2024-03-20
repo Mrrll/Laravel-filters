@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::controller(AuthenticationController::class)->group(function () {
-    Route::get('register', 'register')->name('register');
-    Route::get('login', 'login')->name('login');
-    Route::post('register', 'registered')->name('register');
-    Route::post('login', 'Authorization')->name('login');
+    Route::get('register', 'register')->name('singup')->middleware('guest');
+    Route::get('login', 'login')->name('singin')->middleware('guest');
+    Route::post('register', 'registered')->name('register')->middleware('guest');
+    Route::post('login', 'Authorization')->name('login')->middleware('guest');
     Route::get('logout', 'logout')->name('logout')->middleware(['auth','auth.session']);
 });

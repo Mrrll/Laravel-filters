@@ -3,7 +3,7 @@
 @section('title', 'Email verify')
 
 @section('content')
-    <main class="container-fluid d-flex align-content-center">
+    <main class="container-fluid align-self-center">
         <div class="grid align-items-center justify-self-center" style="--bs-columns: 3; --bs-gap: 1rem;">
             <div class="g-col-3 g-col-md-1 g-start-md-2">
                 <x-messages.alert type="warning" :close="false">

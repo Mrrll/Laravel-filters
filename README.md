@@ -69,6 +69,7 @@ Proyecto de inicio de laravel con Bootstrap.
         -   [Crear componente modal](#item30)
         -   [Crear componente de registro](#item31)
         -   [Crear componentes de login](#item32)
+        -   [Crear componentes del reset password](#item33)
     -   [Controlador de de autentificación](#item34)
     -   [Rutas de autentificación](#item35)
     -   [Validaciones de formularios](#item36)
@@ -77,6 +78,10 @@ Proyecto de inicio de laravel con Bootstrap.
         -   [Rutas de verificación email](#item39)
         -   [Vista de verificación email](#item40)
         -   [Configuración del modelo User](#item41)
+    -   [Sistema de reset password](#item42)
+        -   [Crear Requests para el reset de la password](#item43)
+        -   [Crear rutas del reset de la password](#item44)
+
 
 <a name="item1"></a>
 
@@ -554,50 +559,79 @@ php artisan make:component dom/Button
 > Abrimos el archivo `button.blade.php` en la ubicación `resources/view/components/dom/` y escribimos:
 
 ```html
-@switch($type) @case('link')
-<a href="{{ $route ?? '#' }}" {{ $attributes-
-    >merge(['class' => "$class"]) }} id="{{ $id ?? '' }}" @isset($tooltip) @if
-    ($tooltip != null && $tooltip != '') data-bs-toggle="tooltip"
-    data-bs-placement="{{ $tooltip['position'] }}" @isset($tooltip['class'])
-    data-bs-custom-class="{{ $tooltip['class'] }}" @endisset
-    data-bs-title="@lang($tooltip['text'])" @endif @endisset > {{ $slot }}
-</a>
-@break @case('submit')
-<button type="submit" {{ $attributes->
-    merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}" @isset($form)
-    form="{{ $form }}" @endisset @isset($tooltip) @if ($tooltip != null &&
-    $tooltip != '') data-bs-toggle="tooltip" data-bs-placement="{{
-    $tooltip['position'] }}" @isset($tooltip['class']) data-bs-custom-class="{{
-    $tooltip['class'] }}" @endisset data-bs-title="@lang($tooltip['text'])"
-    @endif @endisset> {{ $slot }}
-</button>
-@break @case('dropdown')
-<div class="{{ $position }}">
-    <button type="button" {{ $attributes->
-        merge(['class' => "dropdown-toggle btn $class"]) }} id="{{ $id ?? '' }}"
-        data-bs-toggle="dropdown" aria-expanded="false"
-        data-bs-auto-close="outside" @isset($tooltip) @if ($tooltip != null &&
-        $tooltip != '') data-bs-toggle="tooltip" data-bs-placement="{{
-        $tooltip['position'] }}" @isset($tooltip['class'])
-        data-bs-custom-class="{{ $tooltip['class'] }}" @endisset
-        data-bs-title="@lang($tooltip['text'])" @endif @endisset> {{--
-        <x-slot:title> Esto es el titulo del botón </x-slot:title> --}} {{
-        $title }}
-    </button>
+
+@switch($type)
+    @case('link')
+        <a href="{{ route($route) }}" {{ $attributes->merge(['class' => "$class"]) }} id="{{ $id ?? '' }}"
+            @isset($tooltip)
+                @if ($tooltip != null && $tooltip != '')
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="{{ $tooltip['position'] }}"
+                    @isset($tooltip['class'])
+                        data-bs-custom-class="{{ $tooltip['class'] }}"
+                    @endisset
+            data-bs-title="@lang($tooltip['text'])" @endif
+        @endisset
+        > {{ $slot }} </a>
+@break
+
+@case('submit')
+    <button type="submit" {{ $attributes->merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}"
+        @isset($form)
+                form="{{ $form }}"
+            @endisset
+        @isset($tooltip)
+                @if ($tooltip != null && $tooltip != '')
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="{{ $tooltip['position'] }}"
+                    @isset($tooltip['class'])
+                        data-bs-custom-class="{{ $tooltip['class'] }}"
+                    @endisset
+        data-bs-title="@lang($tooltip['text'])" @endif
+    @endisset>
     {{ $slot }}
+</button>
+@break
+
+@case('dropdown')
+<div class="{{ $position }}">
+    <button type="button" {{ $attributes->merge(['class' => "dropdown-toggle btn $class"]) }} id="{{ $id ?? '' }}"
+        data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+        @isset($tooltip)
+                @if ($tooltip != null && $tooltip != '')
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="{{ $tooltip['position'] }}"
+                    @isset($tooltip['class'])
+                        data-bs-custom-class="{{ $tooltip['class'] }}"
+                    @endisset
+        data-bs-title="@lang($tooltip['text'])" @endif
+    @endisset>
+    {{-- <x-slot:title>
+                Esto es el titulo del boton
+            </x-slot:title> --}}
+    {{ $title }}
+</button>
+{{ $slot }}
 </div>
-@break @default
-<button type="button" {{ $attributes->
-    merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}" @if(isset($route)
-    && $type != 'modal') onclick="{{ $route }}" @endif @if ($type == 'modal')
-    data-bs-toggle="modal" data-bs-target="#{{ $route }}" @endif
-    @isset($tooltip) @if ($tooltip != null && $tooltip != '')
-    data-bs-toggle="tooltip" data-bs-placement="{{ $tooltip['position'] }}"
-    @isset($tooltip['class']) data-bs-custom-class="{{ $tooltip['class'] }}"
-    @endisset data-bs-title="@lang($tooltip['text'])" @endif @endisset> {{ $slot
-    }}
+@break
+
+@default
+<button type="button" {{ $attributes->merge(['class' => "btn $class"]) }} id="{{ $id ?? '' }}"
+@if (isset($route) && $type != 'modal') onclick="{{ $route }}" @endif
+@if ($type == 'modal') data-bs-toggle="modal" data-bs-target="#{{ $route }}" @endif
+@isset($tooltip)
+        @if ($tooltip != null && $tooltip != '')
+            data-bs-toggle="tooltip"
+            data-bs-placement="{{ $tooltip['position'] }}"
+            @isset($tooltip['class'])
+                data-bs-custom-class="{{ $tooltip['class'] }}"
+            @endisset
+data-bs-title="@lang($tooltip['text'])" @endif
+@endisset>
+{{ $slot }}
 </button>
 @endswitch
+
 ```
 
 > [!NOTE]
@@ -1356,49 +1390,34 @@ public function __construct(
 > Abrimos el archivo `modal.blade.php` en la ubicación `resources/views/components/dom/` y escribimos:
 
 ```html
-<div
-    id="{{ $id }}"
-    class="modal fade"
-    tabindex="-1"
-    aria-hidden="true"
-    @if
-    ($static)
-    data-bs-backdrop="static"
-    data-bs-keyboard="false"
-    @endif
->
-    <div
-        class="modal-dialog {{ $centered ? 'modal-dialog-centered' : '' }} {{ $scrollable ? 'modal-dialog-scrollable' : '' }}"
-    >
+
+<div id="{{ $id }}" class="modal fade" tabindex="-1" aria-hidden="true" aria-labelledby="{{ $id }}"
+    @if ($static) data-bs-backdrop="static" data-bs-keyboard="false" @endif>
+    <div class="modal-dialog {{ $class }} {{ $centered ? 'modal-dialog-centered' : '' }} {{ $scrollable ? 'modal-dialog-scrollable' : '' }}">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">{{ $title }}</h5>
                 @if ($close)
-                <x-dom.button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                ></x-dom.button>
+                    <x-dom.button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></x-dom.button>
                 @endif
             </div>
-            <div class="modal-body">{{ $slot }}</div>
-            @if ($footer)
-            <div class="modal-footer">
-                @if ($close)
-                <x-dom.button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                    >Close</x-dom.button
-                >
-                @endif {{ $footer }}
+            <div class="modal-body">
+                {{ $slot }}
             </div>
+            @if ($footer)
+                <div class="modal-footer">
+                    @if ($close)
+                        <x-dom.button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            aria-label="Close">Close</x-dom.button>
+                    @endif
+                    {{ $footer }}
+                </div>
             @endif
         </div>
     </div>
 </div>
+
 ```
 
 [Subir](#top)
@@ -1543,19 +1562,19 @@ php artisan make:component auth.singup.modal --view
 > Creamos el archivo `register.blade.php` en la ubicación `resources/view/auth/` y añadimos:
 
 ```html
-@extends('layouts.plantilla') @section('title', trans('Sign Up'))
+
+@extends('layouts.plantilla')
+@section('title', trans('Sign Up'))
 @section('content')
-<main class="container-fluid">
-    <div
-        class="grid align-items-center"
-        style="--bs-columns: 3; --bs-gap: 1rem;"
-    >
-        <div class="g-col-3 g-col-lg-1 g-start-lg-2">
-            <x-auth.singup.card />
+    <main class="container-fluid">
+        <div class="grid align-items-center" style="--bs-columns: 3; --bs-gap: 1rem;">
+            <div class="g-col-3 g-col-lg-1 g-start-lg-2">
+                <x-auth.singup.card />
+            </div>
         </div>
-    </div>
-</main>
+    </main>
 @endsection
+
 ```
 
 [Subir](#top)
@@ -1576,66 +1595,50 @@ php artisan make:component auth.singin.modal --view
 
 ```
 
-> Abrimos el archivo `form.blade.php` en la ubicación `resources/view/components/auth/singin/partials/` y escribimos:
+> Abrimos el archivo `form.blade.php` en la ubicación `resources/view/components/auth/singin/` y escribimos:
 
 ```html
+
 <div class="grid align-items-center" style="--bs-gap: 1rem;">
     <div class="g-col-12">
-        <x-dom.input
-            type="email"
-            name="email"
-            label="Email address"
-            placeholder="You Email address"
-            form="form_login"
-        />
+        <x-dom.input type="email" name="email" label="Email address" placeholder="You Email address"
+            form="form_login" />
     </div>
     <div class="g-col-12">
         <div class="d-flex justify-content-between">
             <label class="align-self-center" for="">@lang('Password')</label>
-            <x-dom.button
-                type="modal"
-                class="btn-sm me-1 btn-link"
-                name="forgot-password"
-            >
+            <x-dom.button type='modal' class="btn-sm me-1 btn-link" name="forgot-password" route="forgot-password">
                 @lang('Forgot Your Password?')
             </x-dom.button>
         </div>
-        <x-dom.input
-            type="password"
-            name="password"
-            placeholder="You Password"
-            form="form_login"
-        />
+        <x-dom.input type="password" name="password" placeholder="You Password" form="form_login" />
     </div>
     <div class="g-col-12 text-center">
         <div class="form-check form-switch d-flex justify-content-center">
-            <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="flexSwitchCheckDefault"
-                name="remember"
-                form="form_login"
-            />
+            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" name="remember" form="form_login">
             <label class="form-check-label ms-1" for="flexSwitchCheckDefault">
                 @lang('Remember Me')
             </label>
         </div>
     </div>
 </div>
+
 ```
 
-> Abrimos el archivo `card.blade.php` en la ubicación `resources/view/components/auth/singin/partials/` y escribimos:
+> Abrimos el archivo `card.blade.php` en la ubicación `resources/view/components/auth/singin/` y escribimos:
 
 ```html
+
 <x-dom.card>
     <x-slot:header>
-        <div class="card-header">Sing In</div>
+        <div class="card-header">
+            Sing In
+        </div>
     </x-slot:header>
     <x-auth.singin.form />
     <x-slot:footer>
         <div class="card-footer d-flex justify-content-end">
-            <x-dom.form id="form_login">
+            <x-dom.form id="form_login" :action="route('login')" method="POST">
                 <x-dom.button type="submit" class="btn-primary disabled">
                     @lang('Sing In')
                 </x-dom.button>
@@ -1643,22 +1646,41 @@ php artisan make:component auth.singin.modal --view
         </div>
     </x-slot:footer>
 </x-dom.card>
+<x-auth.singin.partials.forgot.modal :view="true" />
+
 ```
 
 > Abrimos el archivo `modal.blade.php` en la ubicación `resources/view/components/auth/singin/partials/` y escribimos:
 
 ```html
-<x-dom.modal id="singin" :centered="true" class="modal-fullscreen-md-down">
-    <x-slot:title> @lang('Sing In') </x-slot:title>
-    <x-auth.singin.form />
+
+<x-dom.modal id="singin" :centered="true" class="modal-fullscreen-md-down" >
+    <x-slot:title>
+        @lang('Sing In')
+    </x-slot:title>
+    <x-auth.singin.form/>
     <x-slot:footer>
-        <x-dom.form id="form_register">
+        <x-dom.form id="form_login" :action="route('login')" method="POST">
             <x-dom.button type="submit" class="btn-primary disabled">
                 @lang('Sing In')
             </x-dom.button>
         </x-dom.form>
     </x-slot:footer>
 </x-dom.modal>
+<x-auth.singin.partials.forgot.modal />
+@if ($errors->login->any())
+    <script type="module">
+        $('#singin').modal('show');
+        $("#singup").find('#message_errors').each(function() {
+            $(this).hide();
+        });
+        $("#singup").find('input').each(function() {
+            $(this).removeClass('is-invalid');
+            $(this).val('');
+        });
+    </script>
+@endif
+
 ```
 
 > Abrimos el archivo `link_nav.json` en la ubicación `storage/app/config` y creamos una nueva lista.
@@ -1694,7 +1716,7 @@ php artisan make:component auth.singin.modal --view
         "logout" : {
             "name": "Logout",
             "slug": "logout",
-            "type": "link",
+            "type": "submit",
             "route": "logout",
             "class": "nav-link"
         }
@@ -1711,19 +1733,175 @@ php artisan make:component auth.singin.modal --view
 > Creamos el archivo `login.blade.php` en la ubicación `resources/view/auth/` y añadimos:
 
 ```html
-@extends('layouts.plantilla') @section('title', trans('Sign In'))
+
+@extends('layouts.plantilla')
+@section('title', trans('Sign In'))
 @section('content')
-<main class="container-fluid">
-    <div
-        class="grid align-items-center"
-        style="--bs-columns: 3; --bs-gap: 1rem;"
-    >
-        <div class="g-col-3 g-col-lg-1 g-start-lg-2">
-            <x-auth.singin.card />
+    <main class="container-fluid align-self-center">
+        <div class="grid align-items-center" style="--bs-columns: 3; --bs-gap: 1rem;">
+            <div class="g-col-3 g-col-lg-1 g-start-lg-2">
+                <x-auth.singin.card view="{{ true }}"/>
+            </div>
         </div>
-    </div>
-</main>
+    </main>
+    <x-auth.singup.modal />
 @endsection
+
+```
+
+[Subir](#top)
+
+<a name="item33"></a>
+
+#### Crear componentes del reset password
+
+> Typee: en la Consola:
+
+```console
+
+php artisan make:component auth.singin.partials.forgot.form --view
+
+php artisan make:component auth.singin.partials.forgot.modal --view
+
+php artisan make:component auth.singin.partials.reset.form --view
+
+php artisan make:component auth.singin.partials.reset.card --view
+
+
+```
+
+> Abrimos el archivo `form.blade.php` ubicado en `resources/views/components/auth/singin/partials/forgot/`
+
+```html
+
+<div class="grid align-items-center" style="--bs-gap: 1rem;">
+    <div class="g-col-12">
+        <x-dom.input type="email" name="email" label="Email address" placeholder="You Email address"
+            form="form_forgot" />
+    </div>
+</div>
+
+```
+
+> Abrimos el archivo `modal.blade.php` ubicado en `resources/views/components/auth/singin/partials/forgot/`
+
+
+```html
+
+<x-dom.modal id="forgot-password" :centered="true" class="modal-fullscreen-md-down" :close="false">
+    <x-slot:title>
+        @lang('Forgot Password')
+    </x-slot:title>
+    <x-auth.singin.partials.forgot.form />
+    <x-slot:footer>
+        @if (isset($view))
+            <x-dom.button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">
+                @lang('Back')
+            </x-dom.button>
+        @else
+            <x-dom.button type="modal" class="btn-secondary" route="singin">
+                @lang('Back')
+            </x-dom.button>
+        @endif
+        <x-dom.form id="form_forgot" action="{{ route('password.email') }}" method="POST">
+            <x-dom.button type="submit" class="btn-primary disabled">
+                @lang('Send')
+            </x-dom.button>
+        </x-dom.form>
+    </x-slot:footer>
+</x-dom.modal>
+@if ($errors->forgot->any())
+    <script type="module">
+        $('#forgot-password').modal('show');
+        $("#singup").find('#message_errors').each(function() {
+            $(this).hide();
+        });
+        $("#singin").find('#message_errors').each(function() {
+            $(this).hide();
+        });
+        $("#singup").find('input').each(function() {
+            $(this).removeClass('is-invalid');
+            $(this).val('');
+        });
+        $("#singin").find('input').each(function() {
+            $(this).removeClass('is-invalid');
+            $(this).val('');
+        });
+    </script>
+@endif
+
+```
+
+
+> Abrimos el archivo `form.blade.php` ubicado en `resources/views/components/auth/singin/partials/reset/`
+
+```html
+
+<div class="grid align-items-center" style="--bs-gap: 1rem;">
+    <div class="g-col-12">
+        <x-dom.input type="hidden" name="token" value="{{ $token }}" form="form_reset" />
+    </div>
+    <div class="g-col-12">
+        <x-dom.input type="email" name="email" label="Email address" placeholder="You Email address" :readonly="true" value="{{ old('email', $email) }}" form="form_reset" />
+    </div>
+    <div class="g-col-12">
+        <x-dom.input type="password" name="password" label="Password" placeholder="You Password" form="form_reset" />
+    </div>
+    <div class="g-col-12">
+        <x-dom.input type="password" label="Password Confirmation" name="password_confirmation"
+            placeholder="You Confirmation Password" form="form_reset" />
+    </div>
+</div>
+
+```
+
+> Abrimos el archivo `card.blade.php` ubicado en `resources/views/components/auth/singin/partials/reset/`
+
+```html
+
+<x-dom.card>
+    <x-slot:header>
+        <div class="card-header">
+            Reset Password
+        </div>
+    </x-slot:header>
+    <x-auth.singin.partials.reset.form token="{{ $token }}" email="{{ $email }}" />
+    <x-slot:footer>
+        <div class="card-footer d-flex justify-content-end">
+            <x-dom.form id="form_reset" action="{{ route('password.update') }}" method="post">
+                <x-dom.button type="submit" class="btn-primary disabled">
+                    @lang('Reset')
+                </x-dom.button>
+            </x-dom.form>
+        </div>
+    </x-slot:footer>
+</x-dom.card>
+@if ($errors->reset->any())
+    <script type="module">
+        $("#singup").find('#message_errors').each(function() {
+            $(this).hide();
+        });
+        $("#singin").find('#message_errors').each(function() {
+            $(this).hide();
+        });
+        $("#forgot-password").find('#message_errors').each(function() {
+            $(this).hide();
+        });
+        $("#singup").find('input').each(function() {
+            $(this).removeClass('is-invalid');
+            $(this).val('');
+        });
+        $("#singin").find('input').each(function() {
+            $(this).removeClass('is-invalid');
+            $(this).val('');
+        });
+        $("#forgot-password").find('input').each(function() {
+            $(this).removeClass('is-invalid');
+            $(this).val('');
+        });
+    </script>
+@endif
+
 ```
 
 [Subir](#top)
@@ -2022,14 +2200,14 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "Authentication" middleware group. Make something great!
 |
 */
-Route::controller(AuthenticationController::class)->group(function () {
-    Route::get('register', 'register')->name('register');
-    Route::get('login', 'login')->name('login');
-    Route::post('register', 'registered')->name('register');
-    Route::post('login', 'Authorization')->name('login');
-    Route::get('logout', 'logout')->name('logout')->middleware(['auth', 'auth.session']);
-});
 
+Route::controller(AuthenticationController::class)->group(function () {
+    Route::get('register', 'register')->name('singup')->middleware('guest');
+    Route::get('login', 'login')->name('singin')->middleware('guest');
+    Route::post('register', 'registered')->name('register')->middleware('guest');
+    Route::post('login', 'Authorization')->name('login')->middleware('guest');
+    Route::get('logout', 'logout')->name('logout')->middleware(['auth','auth.session']);
+});
 
 ```
 
@@ -2045,7 +2223,9 @@ Route::controller(AuthenticationController::class)->group(function () {
     <x-nav.links name="login" />
 @endguest
 @auth
-    <x-nav.links name="auth_login" />
+    <x-dom.form :action="route('logout')" :valid="false">
+        <x-nav.links name="auth_login" />
+    </x-dom.form>
 @endauth
 
 ```
@@ -2228,6 +2408,7 @@ Route::controller(AuthenticationController::class)->group(function () {
 php artisan make:request Auth/Mails/EmailVerificationRequest
 
 ```
+
 > Abrimos el archivo `EmailVerificationRequest.php` ubicado en `app/Http/Requests/Auth/Mails` y escribimos:
 
 ```php
@@ -2380,7 +2561,7 @@ Route::post('/email/verification-notification', function (Request $request) {
 @section('title', 'Email verify')
 
 @section('content')
-    <main class="container-fluid d-flex align-content-center">
+    <main class="container-fluid align-self-center">
         <div class="grid align-items-center justify-self-center" style="--bs-columns: 3; --bs-gap: 1rem;">
             <div class="g-col-3 g-col-md-1 g-start-md-2">
                 <x-messages.alert type="warning" :close="false">
@@ -2470,6 +2651,289 @@ class User extends Authenticatable implements MustVerifyEmail
 > `MustVerifyEmail y Notifiable son muy importantes para el envío y para proteger las rutas.
 
 [Subir](#top)
+
+<a name="item42"></a>
+
+### Sistema de reset password
+
+<a name="item43"></a>
+
+#### Crear Requests para el reset de la password
+
+> Typee: en la Consola:
+
+```console
+
+php artisan make:request Auth/Password/ForgotRequest
+
+php artisan make:request Auth/Password/ResetRequest
+
+```
+
+> Abrimos el archivo `ForgotRequest.php` ubicado en `app/Http/Requests/Auth/Password/` y escribimos:
+
+```php
+
+<?php
+
+namespace App\Http\Requests\Auth\Password;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Lang;
+
+class ForgotRequest extends FormRequest
+{
+    protected $errorBag = 'forgot';
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'email' => 'required|email|exists:users',
+        ];
+    }
+
+    /**
+     * The function attributes() in PHP returns an array.
+     *
+     * @return An array is being returned.
+     */
+    public function attributes()
+    {
+        return [
+            "email" => strtolower(Lang::get('Email')),
+        ];
+    }
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'email.exists' => Lang::get('The email does not exist in the database'),
+        ];
+    }
+}
+
+```
+
+> Abrimos el archivo ResetRequest.php ubicado en `app/Http/Requests/Auth/Password/` y escribimos:
+
+```php
+
+<?php
+
+namespace App\Http\Requests\Auth\Password;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Lang;
+
+class ResetRequest extends FormRequest
+{
+    protected $errorBag = 'reset';
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'token' => 'required',
+            'email' => 'required|email|exists:users',
+            'password' => 'required|confirmed',
+        ];
+    }
+    /**
+     * The function attributes() in PHP returns an array.
+     *
+     * @return An array is being returned.
+     */
+    public function attributes()
+    {
+        return [
+            "email" => strtolower(Lang::get('Email')),
+            "password" => strtolower(Lang::get('Password')),
+            "password_confirmation" => strtolower(Lang::get('Password Confirmation')),
+        ];
+    }
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'email.exists' => Lang::get('The email does not exist in the database'),
+        ];
+    }
+}
+
+
+```
+
+[Subir](#top)
+
+<a name="item44"></a>
+
+#### Crear rutas del reset de la password
+
+> Crear el archivo `forgot_password.php` en la ubicación `routes` y escribimos :
+
+```php
+
+<?php
+
+use App\Http\Requests\Auth\Password\ForgotRequest;
+use App\Http\Requests\Auth\Password\ResetRequest;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
+use App\Models\User;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Str;
+
+/*
+|--------------------------------------------------------------------------
+| Forgot Password Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register Forgot Password routes for your application. These
+| routes are loaded by the Route ServiceProvider and all of them will
+| be assigned to the "Forgot Password" middleware group. Make something great!
+|
+*/
+
+Route::post('/forgot-password', function (ForgotRequest $request) {
+
+    $status = Password::sendResetLink($request->only('email'));
+
+    return $status === Password::RESET_LINK_SENT
+        ? back()->with([
+            'status' => __($status),
+            'message' => [
+                'type' => 'success',
+                'title' => Lang::get('Message sent') . '!',
+                'message' => Lang::get('The message was delivered, follow the instructions to change the password.')
+            ],
+        ])
+        : back()->with([
+            'message' => [
+                'type' => 'danger',
+                'title' => Lang::get('The message could not be delivered') . '!',
+                'message' => Lang::get('Check your settings and if the problem persists, contact your administrator.')
+            ],
+        ]);
+})
+    ->middleware('guest')
+    ->name('password.email');
+
+Route::get('/reset-password/{token}/', function (
+    Request $request,
+    string $token
+) {
+
+    return view('auth.partials.reset-password', [
+        'token' => $token,
+        'email' => (string) $request->query('email'),
+    ]);
+})
+    ->middleware('guest')
+    ->name('password.reset');
+
+Route::post('/reset-password', function (ResetRequest $request) {
+
+    $status = Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'token'),
+        function (User $user, string $password) {
+
+            $user
+                ->forceFill([
+                    'password' => $password,
+                ])
+                ->setRememberToken(Str::random(60));
+
+            $user->save();
+
+            event(new PasswordReset($user));
+        }
+    );
+
+    return $status === Password::PASSWORD_RESET
+        ? redirect()
+        ->route('login')
+        ->with([
+            'status', __($status),
+            'message' => [
+                'type' => 'success',
+                'title' => Lang::get('Password changed') . '!',
+                'message' => Lang::get('The password has been changed successfully, you can enter with your new password.')
+            ],
+        ])
+        : back()->with([
+            'message' => [
+                'type' => 'dander',
+                'title' => Lang::get('The password could not be changed') . '!',
+                'message' => Lang::get('Check your settings and if the problem persists, contact your administrator.')
+            ],
+        ]);
+})
+    ->middleware('guest')
+    ->name('password.update');
+
+```
+
+> [!IMPORTANT]
+> Importamos `require('forgot_password.php');` en el archivo `web.php` ubicado en `routes` y cambiamos en el archivo `RouteServiceProvider.php` ubicado en `app/Providers/` la ruta raíz del home `public const HOME = '/';`.
+
+[Subir](#top)
+
+<a name="item45"></a>
+
+#### Crear vista del reset de la password
+
+> Crear el archivo `reset-password.php` en la ubicación `resources/views/auth/partials/` y escribimos :
+
+```html
+
+@extends('layouts.plantilla')
+@section('title', trans('Reset Password'))
+@section('content')
+    <main class="container-fluid align-self-center">
+        <div class="grid align-items-center justify-self-center" style="--bs-columns: 3; --bs-gap: 1rem;">
+            <div class="g-col-12 g-col-md-1 g-start-md-2">
+                <x-auth.singin.partials.reset.card token="{{ $token }}" email="{{ $email }}" />
+            </div>
+        </div>
+    </main>
+    <x-auth.singup.modal />
+    <x-auth.singin.modal />
+@endsection
+
+```
 
 > Pues eso es todo espero que sirva. 👍
 

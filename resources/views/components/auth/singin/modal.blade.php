@@ -11,6 +11,7 @@
         </x-dom.form>
     </x-slot:footer>
 </x-dom.modal>
+<x-auth.singin.partials.forgot.modal />
 @if ($errors->login->any())
     <script type="module">
         $('#singin').modal('show');

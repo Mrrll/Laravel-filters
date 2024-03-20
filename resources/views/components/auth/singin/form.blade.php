@@ -6,7 +6,7 @@
     <div class="g-col-12">
         <div class="d-flex justify-content-between">
             <label class="align-self-center" for="">@lang('Password')</label>
-            <x-dom.button type='modal' class="btn-sm me-1 btn-link" name="forgot-password">
+            <x-dom.button type='modal' class="btn-sm me-1 btn-link" name="forgot-password" route="forgot-password">
                 @lang('Forgot Your Password?')
             </x-dom.button>
         </div>

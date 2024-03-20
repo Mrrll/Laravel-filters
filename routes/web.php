@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 require('auth.php');
 require('verify_routes.php');
+require('forgot_password.php');
 
 Route::get('/', function () {
     return view('welcome');

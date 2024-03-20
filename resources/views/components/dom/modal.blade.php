@@ -1,4 +1,4 @@
-<div id="{{ $id }}" class="modal fade" tabindex="-1" aria-hidden="true"
+<div id="{{ $id }}" class="modal fade" tabindex="-1" aria-hidden="true" aria-labelledby="{{ $id }}"
     @if ($static) data-bs-backdrop="static" data-bs-keyboard="false" @endif>
     <div class="modal-dialog {{ $class }} {{ $centered ? 'modal-dialog-centered' : '' }} {{ $scrollable ? 'modal-dialog-scrollable' : '' }}">
         <div class="modal-content">
