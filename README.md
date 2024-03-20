@@ -2,6 +2,144 @@
 
 Proyecto de inicio de laravel con Bootstrap.
 
+## Como se Usa.
+
+> Typee: en la Consola:
+
+```console
+
+git clone https://github.com/Mrrll/Laravel-Initial-Bootstrap.git new_name
+
+```
+
+> Eliminamos la carpeta `.git` del proyecto. y seguimos los pasos de [Inicializar Git](#item2)
+
+
+> Iniciamos el npm
+
+> Typee: en la Consola:
+
+```console
+
+npm i
+
+```
+
+> Iniciamos el composer
+
+> Typee: en la Consola:
+
+```console
+
+composer dump-autoload
+
+```
+
+> [!IMPORTANT]
+> Duplicamos el archivo `.env.example` y lo renombramos a `.env` configuramos la `base de datos` y el `servidor de correo` y creamos la base de datos.
+
+> Typee: en la Consola:
+
+```console
+
+cp .env.example .env
+
+```
+
+> Iniciamos el npm
+
+> Typee: en la Consola:
+
+```console
+
+npm i
+
+```
+
+> Iniciamos el composer
+
+> Typee: en la Consola:
+
+```console
+
+composer update
+
+composer dump-autoload
+
+```
+
+> Typee: en la Consola:
+
+```console
+
+php artisan migrate
+
+```
+
+
+> Creamos el archivo `link_nav.json` en la ubicación `storage/app/config/` y escribimos:
+
+```json
+
+{
+    "links": {
+        "welcome": {
+            "name": "Welcome",
+            "slug": "welcome",
+            "type": "link",
+            "route": "welcome",
+            "class": "nav-link"
+        }
+    },
+    "login": {
+        "singin": {
+            "name": "Sing In",
+            "slug": "sing-in",
+            "type": "modal",
+            "route": "singin",
+            "class": "nav-link"
+        },
+        "singup": {
+            "name": "Sing Up",
+            "slug": "sing-up",
+            "type": "modal",
+            "route": "singup",
+            "class": "nav-link"
+        }
+    },
+    "auth_login": {
+        "logout": {
+            "name": "Logout",
+            "slug": "logout",
+            "type": "submit",
+            "route": "logout",
+            "class": "nav-link"
+        }
+    }
+}
+
+
+```
+
+> Iniciamos nuestro proyecto.
+
+> Typee: en la Consola:
+
+```console
+
+npm run dev
+
+php artisan key:generate
+
+php artisan serve
+
+```
+
+> [!IMPORTANT]
+> Para que funcionen los estilos hay que cambiar en las configuraciones de bootstrap, accedemos al archivo _variables.scss ubicado en node_modules/bootstrap/scss/ y cambiamos el valor a $enable-grid-classes: false !default; y el valor a $enable-cssgrid: true !default.
+
+> Pues eso es todo del uso de este repositorio, espero que sirva. 👍
+
 ## Requisitos
 
 -   [PHP8^|"Xammp"](https://www.apachefriends.org/es/download.html).
@@ -32,6 +170,7 @@ Proyecto de inicio de laravel con Bootstrap.
 **`Nota:` Actualiza composer .**
 
 > Al instalar Laravel hay que asegurarse que en el archivo `php.ini` que esta en la carpeta `C:\xampp\php\php.ini` este hay que descomentar la extension `extension=zip`.
+
 
 <a name="top"></a>
 
