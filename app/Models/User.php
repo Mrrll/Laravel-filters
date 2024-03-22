@@ -42,4 +42,28 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+
+    /**
+     * The `roles()` function defines a many-to-many relationship between the current model and the
+     * `Role` model in PHP.
+     *
+     * @return roles associated with it. When this method is called on an instance of the class, it will return
+     * a collection of
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    /**
+     * The `profile` function returns a polymorphic relationship with the `Profile` model.
+     *
+     * @return Profile model. This means that the current model can be associated with multiple Profile models
+     * through a polymorphic many-to-many relationship.
+     */
+    public function profile()
+    {
+        return $this->morphToMany(Profile::class, 'profileable');
+    }
 }

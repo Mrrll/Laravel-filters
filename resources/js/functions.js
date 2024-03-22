@@ -35,7 +35,7 @@ $("form, input, select, textarea").on("change", function (e) {
     let btn = null;
     // Buscamos si esta dentro de un formulario
     let form = $(e.target).parents("form")[0];
-    
+
     if (form == undefined) {
         // Si no esta dentro de un formulario damos por echo que tiene el atributo form, en el que contiene el id del formulario al que pertenece.
         form = $("#" + $(e.target).attr("form"));
@@ -66,3 +66,30 @@ $("form, input, select, textarea").on("change", function (e) {
         });
 
 });
+
+// Funcion para visualizar una imagen antes de guardarla.
+function previewImage(event, querySelector, queryPreview) {
+    //Recuperamos el input que desencadeno la acción
+    const input = event.target;
+
+    //Recuperamos las etiquetas img donde cargaremos la imagen
+    let imgPreview = document.querySelector(querySelector);
+    let preview = document.querySelector(queryPreview);
+
+    // Escondemos la imagen vista por la nueva
+    $(preview).addClass("d-none");
+    $(imgPreview).removeClass("d-none");
+
+    // Verificamos si existe una imagen seleccionada
+    if (!input.files.length) return;
+
+    //Recuperamos el archivo subido
+    let file = input.files[0];
+
+    //Creamos la url
+    let objectURL = URL.createObjectURL(file);
+
+    //Modificamos el atributo src de la etiqueta img
+    imgPreview.src = objectURL;
+}
+window.previewImage = previewImage;

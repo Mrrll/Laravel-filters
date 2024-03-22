@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,10 +8,15 @@
     <title>@yield('title')</title>
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
 </head>
+
 <body class="body">
-    <x-layouts.header />
+    <x-layouts.header :profile="isset($profile) && $profile ? $profile : null" />
     @include('messages.toasts')
     @yield('content')
     <x-layouts.footer />
+    @auth
+        <x-app.profile.modal :profile="isset($profile) && $profile ? $profile : null" />
+    @endauth
 </body>
+
 </html>

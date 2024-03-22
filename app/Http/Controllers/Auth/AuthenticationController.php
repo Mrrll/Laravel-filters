@@ -46,9 +46,10 @@ class AuthenticationController extends Controller
      */
     public function registered(RegisterRequest $request)
     {
-        // dd($request->validated());
         try {
+            $role = count(User::all()) > 0 ? 2 : 1;
             $user = User::create($request->safe()->except(['password_confirmation']));
+            $user->roles()->attach($role);
             event(new Registered($user)); // ! Comentar esta linea hasta que se configure la validación de email.
             $credentials = $request->safe()->only('email', 'password');
             if (Auth::attempt($credentials)) {

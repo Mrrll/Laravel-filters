@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -19,5 +21,20 @@ require('verify_routes.php');
 require('forgot_password.php');
 
 Route::get('/', function () {
-    return view('welcome');
+    $profile = auth()->user() && auth()->user()->profile->first() ? auth()->user()->profile->first() : null;
+    return view('welcome', compact('profile'));
 })->name('welcome');
+
+Route::group(
+    ['middleware' => ['auth', 'auth.session', 'verified']],
+    function () {
+
+        Route::get('profile/ajax', [ProfileController::class, 'ajax']);
+        Route::resource('profile', ProfileController::class);
+
+        Route::get('storage/private/{file}', function ($file) {
+            $path = storage_path('app/private/' . $file);
+            return response()->file($path);
+        })->name('private');
+    }
+);

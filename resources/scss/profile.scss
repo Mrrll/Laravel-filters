@@ -1,0 +1,20 @@
+#btn_delete_avatar {
+    position: absolute;
+    z-index: 999;
+    display: none;
+    background: rgba(16, 16, 16, 0.822);
+    border-radius: 5px;
+    right: -15px;
+    top: 0;
+}
+.avatar:hover > #btn_delete_avatar{
+    display: flex;
+
+}
+#btn_delete_avatar:hover {
+    display: flex;
+}
+.avatar {
+    cursor: pointer;
+    position: relative;
+}
