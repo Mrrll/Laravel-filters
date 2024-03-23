@@ -17,7 +17,13 @@ Proyecto de filtrado de búsquedas
 ## Configuración
 
 > [!TIP]
-> Estamos usando el repositorio [Laravel 10](https://github.com/Mrrll/Laravel10) para que puedas tener una guía, tiene explicaciones detalladas. He creado para este ejercicio `Roles de usuario` El primer usuario registrado sera el admin y los siguientes clientes utilizo las `puertas(Gates)` para administrar permisos y middleware para el acceso del admin. También he creado perfiles con una relación de muchos a muchos poliformica con tabla intermedia.
+> Estamos usando el repositorio [Laravel 10](https://github.com/Mrrll/Laravel10) para que puedas tener una guía, tiene explicaciones detalladas.
+
+> [!NOTE]
+> He creado para este ejercicio `Roles de usuario` El primer usuario registrado sera el admin y los siguientes clientes utilizo las `puertas(Gates)` para administrar permisos y middleware para el acceso del admin. También he creado perfiles con una relación de muchos a muchos poliformica con tabla intermedia y una tabla de imágenes con una relación de muchos a muchos poliformica.
+
+> [!NOTE]
+> En este ejercicio usare un sistema de películas con sus géneros, etiquetas, valoraciones y comentarios por parte de los usuarios registrados.
 
 > Pues eso es todo espero que sirva. 👍
 

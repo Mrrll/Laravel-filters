@@ -25,13 +25,12 @@
 
                 @endauth
                 <div class="d-lg-flex">
-                    <x-nav.links name="links" />
+                    {{-- <x-nav.links name="links" /> --}}
+                    @auth
+                        <x-nav.links name="links_auth" />
+                    @endauth
                     @can('isAdmin')
                         <x-nav.links name="admin" />
-                    @else
-                        @auth
-                            <x-nav.links name="links_auth" />
-                        @endauth
                     @endcan
                 </div>
                 @guest

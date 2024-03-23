@@ -17,6 +17,10 @@
     @auth
         <x-app.profile.modal :profile="isset($profile) && $profile ? $profile : null" />
     @endauth
+    @can('isAdmin')
+        <x-app.gender.modal :gender="isset($gender) && $gender ? $gender : null" />
+        <x-app.tag.modal :tag="isset($tag) && $gender ? $tag : null" />
+    @endcan
 </body>
 
 </html>
