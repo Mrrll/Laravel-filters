@@ -17,7 +17,9 @@ return new class extends Migration
             $table->text('description');
             $table->unsignedBigInteger('gender_id')->nullable();
             $table->foreign('gender_id')->references('id')->on('genders')->onDelete('set null');
-            $table->timestamp('year');
+            $table->date('year');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

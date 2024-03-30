@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\ToastController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -32,22 +33,20 @@ Route::group(
     function () {
 
         Route::get('profile/ajax', [ProfileController::class, 'ajax']);
-        Route::resource('profile', ProfileController::class);
+        Route::resource('profile', ProfileController::class)->only(['store', 'update']);
 
-        Route::get('movies/ajax', [MovieController::class, 'ajax']);
         Route::resource('movies', MovieController::class);
 
-        Route::get('genders/ajax', [GenderController::class, 'ajax']);
-        Route::resource('genders', GenderController::class);
+        Route::resource('genders', GenderController::class)->except(['create', 'edit', 'show', 'update'])->middleware('admin');
 
-        Route::get('comments/ajax', [CommentController::class, 'ajax']);
-        Route::resource('comments', CommentController::class);
+        Route::resource('comments', CommentController::class)->only(['store','destroy']);
 
         Route::get('ratings/ajax', [RatingController::class, 'ajax']);
-        Route::resource('ratings', RatingController::class);
 
         Route::get('tags/ajax', [TagController::class, 'ajax']);
-        Route::resource('tags', TagController::class);
+        Route::resource('tags', TagController::class)->except(['create', 'edit', 'show', 'update'])->middleware('admin');
+
+        Route::get('toasts/ajax', [ToastController::class, 'ajax']);
 
         Route::get('storage/private/{file}', function ($file) {
             $path = storage_path('app/private/' . $file);

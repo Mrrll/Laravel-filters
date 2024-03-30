@@ -3,64 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Models\Rating;
-use App\Http\Requests\StoreRatingRequest;
-use App\Http\Requests\UpdateRatingRequest;
+use App\Http\Requests\Rating\AjaxRatingRequest;
+use App\Models\Movie;
+use App\Models\User;
 
 class RatingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function ajax(AjaxRatingRequest $request)
     {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreRatingRequest $request)
-    {
-        //
-    }
+        if ($request->ajax()) {
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Rating $rating)
-    {
-        //
-    }
+            if (isset($request->id)) {
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Rating $rating)
-    {
-        //
-    }
+                $user = User::find($request->safe()->only('user_id'))->first();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateRatingRequest $request, Rating $rating)
-    {
-        //
-    }
+                $movie = Movie::find($request->validated()['movie_id']);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Rating $rating)
-    {
-        //
+                $rating = Rating::where('movie_id', $request->validated()['movie_id'])->first();
+
+
+                if ($rating != null) {
+
+                    $movie->ratings()->update($request->safe()->except('user_id'));
+                    $rating = Rating::where('movie_id', $request->validated()['movie_id'])->first();
+                } else {
+
+                    $rating = $movie->ratings()->create($request->safe()->except('user_id'));
+                }
+
+                $user->rating()->attach($rating);
+
+                $info = [
+                    "movie" => $request->validated()['movie_id'],
+                    "rating" => [
+                        "yes" => $rating->yes,
+                        "no" => $rating->no,
+                        "rating" => $rating->rating,
+                    ]
+                ];
+            }
+            return response()->json($info);
+        }
     }
 }

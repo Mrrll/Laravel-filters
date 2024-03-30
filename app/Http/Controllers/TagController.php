@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Tag\AjaxTagRequest;
 use App\Models\Tag;
-use App\Http\Requests\StoreTagRequest;
-use App\Http\Requests\UpdateTagRequest;
+use App\Http\Requests\Tag\StoreTagRequest;
+use App\Models\Movie;
+use Illuminate\Support\Facades\Lang;
 
 class TagController extends Controller
 {
@@ -13,16 +15,9 @@ class TagController extends Controller
      */
     public function index()
     {
+        $tags = Tag::orderBy('id', 'desc')->paginate(5);
         $profile = auth()->user() && auth()->user()->profile->first() ? auth()->user()->profile->first() : null;
-        return view('app.tags.index', compact('profile'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return view('app.tags.index', compact('profile', 'tags'));
     }
 
     /**
@@ -30,31 +25,24 @@ class TagController extends Controller
      */
     public function store(StoreTagRequest $request)
     {
-        //
-    }
+        try {
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Tag $tag)
-    {
-        //
-    }
+            Tag::create($request->validated());
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Tag $tag)
-    {
-        //
-    }
+            return redirect()->back()->with('message', [
+                'type' => 'success',
+                'title' => Lang::get('Save success') . '!',
+                'message' => Lang::get('Success in saving your :name.', ['name' => strtolower(Lang::get('Tag'))]),
+            ]);
+        } catch (\Throwable $th) {
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateTagRequest $request, Tag $tag)
-    {
-        //
+            return back()->with('message', [
+                'type' => 'danger',
+                'autohide' => 'false',
+                'title' => Lang::get('An unexpected error has occurred') . '!',
+                'message' => Lang::get($th->getMessage()) . ' ' . Lang::get('Check your settings and if the problem persists, contact your administrator.'),
+            ]);
+        }
     }
 
     /**
@@ -62,6 +50,44 @@ class TagController extends Controller
      */
     public function destroy(Tag $tag)
     {
-        //
+        try {
+
+            $tag->delete();
+
+            return redirect()->back()->with('message', [
+                'type' => 'success',
+                'title' => Lang::get('Delete success') . '!',
+                'message' => Lang::get('Success in deleting your :name.', ['name' => strtolower(Lang::get('Tag'))]),
+            ]);
+        } catch (\Throwable $th) {
+
+            return back()->with('message', [
+                'type' => 'danger',
+                'autohide' => 'false',
+                'title' => Lang::get('An unexpected error has occurred') . '!',
+                'message' => Lang::get($th->getMessage()) . ' ' . Lang::get('Check your settings and if the problem persists, contact your administrator.'),
+            ]);
+        }
+    }
+
+    public function ajax(AjaxTagRequest $request)
+    {
+        if ($request->ajax()) {
+            if (isset($request->id)) {
+                if (isset($request->select) && $request->select) {
+
+                    $movie = Movie::find($request->id);
+                    $info = $movie->tags->toArray();
+                } else {
+
+                    $tag = Tag::find($request->id);
+                    $info = [
+                        "id" => $tag->id,
+                        "name" => $tag->name,
+                    ];
+                }
+            }
+            return response()->json($info);
+        }
     }
 }

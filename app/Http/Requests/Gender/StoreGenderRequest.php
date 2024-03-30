@@ -1,17 +1,19 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Gender;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Lang;
 
-class StoreCommentRequest extends FormRequest
+class StoreGenderRequest extends FormRequest
 {
+    protected $errorBag = 'gender';
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +24,14 @@ class StoreCommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|unique:genders,name,' . $this->gender_id,
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            "name" => strtolower(Lang::get('Name')),
         ];
     }
 }

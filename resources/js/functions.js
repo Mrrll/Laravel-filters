@@ -64,7 +64,6 @@ $("form, input, select, textarea").on("change", function (e) {
                 return false;
             }
         });
-
 });
 
 // Funcion para visualizar una imagen antes de guardarla.
@@ -79,7 +78,7 @@ function previewImage(event, querySelector, queryPreview) {
     // Escondemos la imagen vista por la nueva
     $(preview).addClass("d-none");
     $(imgPreview).removeClass("d-none");
-
+    $(imgPreview).parent().removeClass("d-none");
     // Verificamos si existe una imagen seleccionada
     if (!input.files.length) return;
 
@@ -89,7 +88,15 @@ function previewImage(event, querySelector, queryPreview) {
     //Creamos la url
     let objectURL = URL.createObjectURL(file);
 
-    //Modificamos el atributo src de la etiqueta img
-    imgPreview.src = objectURL;
+    // Modificamos el atributo background de la etiqueta div
+    console.log(imgPreview.localName);
+    if (imgPreview.localName == 'div') {
+        $(imgPreview).css({
+            background: "url(" + objectURL + ")",
+        });
+    }
+    if (imgPreview.localName == 'img') {
+        imgPreview.src = objectURL;
+    }
 }
 window.previewImage = previewImage;

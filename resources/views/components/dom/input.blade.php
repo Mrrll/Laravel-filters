@@ -42,11 +42,10 @@
             @error($name)
                 {{ $attributes->merge(['class' => 'form-control is-invalid']) }}
             @enderror
-            @endif {{ $attributes->merge(['class' => "form-control $class"]) }} placeholder="{{ $placeholder }}"
+            @endif {{ $attributes->merge(['class' => "form-control $class"]) }}
             clo="{{ $col }}" rows="{{ $rows }}" @if ($readonly) @readonly(true) @endif
             @if ($disabled) @disabled(true) @endif
-            @if ($form) form="{{ $form }}" @endif>
-            {{ old($name, $slot) }}
+            @if ($form) form="{{ $form }}" @endif>{{ old($name, $slot) }}
         </textarea>
     @break
 

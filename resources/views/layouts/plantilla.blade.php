@@ -19,7 +19,7 @@
     @endauth
     @can('isAdmin')
         <x-app.gender.modal :gender="isset($gender) && $gender ? $gender : null" />
-        <x-app.tag.modal :tag="isset($tag) && $gender ? $tag : null" />
+        <x-app.tag.modal :tag="isset($tag) && $tag ? $tag : null" />
     @endcan
 </body>
 

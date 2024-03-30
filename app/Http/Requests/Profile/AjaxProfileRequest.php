@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Profile;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Support\Facades\Lang;
 
 class AjaxProfileRequest extends FormRequest
 {
@@ -24,5 +26,21 @@ class AjaxProfileRequest extends FormRequest
         return [
             'deleteavatar' => 'integer'
         ];
+    }
+
+    /**
+     * If validator fails return the exception
+     * @param Validator $validator
+     * @return array
+     */
+    protected function failedValidation(Validator $validator)
+    {
+
+        return redirect()->back()->with('message', [
+            'type' => 'warning',
+            'autohide' => 'false',
+            'title' => Lang::get('Oops') . '!',
+            'message' => Lang::get('Warning your avatar could not be deleted :name.', ['name' => strtolower(Lang::get('Profile'))]),
+        ]);
     }
 }

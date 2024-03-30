@@ -17,3 +17,8 @@
 .resize-none {
     resize: none;
  }
+
+ .btn-xs {
+    font-size: 0.475rem;
+ }
+

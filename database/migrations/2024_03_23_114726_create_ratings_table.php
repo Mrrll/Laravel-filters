@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('ratings', function (Blueprint $table) {
             $table->id();
-            $table->integer('yes');
-            $table->integer('no');
+            $table->integer('yes')->nullable();
+            $table->integer('no')->nullable();
+            $table->float('rating')->nullable();
             $table->unsignedBigInteger('movie_id');
             $table->foreign('movie_id')->references('id')->on('movies')->onDelete('cascade');
             $table->timestamps();
+            $table->unique(['id', 'movie_id']);
         });
     }
 

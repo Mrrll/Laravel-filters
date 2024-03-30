@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Tag;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Lang;
 
-class StoreTagRequest extends FormRequest
+class AjaxTagRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,14 @@ class StoreTagRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "id" => "required|integer",
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            "id" => strtolower(Lang::get('Tag')),
         ];
     }
 }

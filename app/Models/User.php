@@ -66,4 +66,19 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->morphToMany(Profile::class, 'profileable');
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function movies()
+    {
+        return $this->hasMany(Movie::class);
+    }
+
+    public function rating()
+    {
+        return $this->morphToMany(Rating::class, 'ratingable');
+    }
 }

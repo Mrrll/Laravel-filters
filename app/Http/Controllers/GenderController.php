@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gender;
-use App\Http\Requests\StoreGenderRequest;
-use App\Http\Requests\UpdateGenderRequest;
+use App\Http\Requests\Gender\StoreGenderRequest;
+use Illuminate\Support\Facades\Lang;
 
 class GenderController extends Controller
 {
@@ -13,48 +13,35 @@ class GenderController extends Controller
      */
     public function index()
     {
+        $genders = Gender::orderBy('id', 'desc')->paginate(5);
         $profile = auth()->user() && auth()->user()->profile->first() ? auth()->user()->profile->first() : null;
-        return view('app.genders.index', compact('profile'));
+        return view('app.genders.index', compact('profile', 'genders'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(StoreGenderRequest $request)
     {
-        //
-    }
+        try {
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Gender $gender)
-    {
-        //
-    }
+            Gender::create($request->validated());
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Gender $gender)
-    {
-        //
-    }
+            return redirect()->back()->with('message', [
+                'type' => 'success',
+                'title' => Lang::get('Save success') . '!',
+                'message' => Lang::get('Success in saving your :name.', ['name' => strtolower(Lang::get('Gender'))]),
+            ]);
+        } catch (\Throwable $th) {
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateGenderRequest $request, Gender $gender)
-    {
-        //
+            return back()->with('message', [
+                'type' => 'danger',
+                'autohide' => 'false',
+                'title' => Lang::get('An unexpected error has occurred') . '!',
+                'message' => Lang::get($th->getMessage()) . ' ' . Lang::get('Check your settings and if the problem persists, contact your administrator.'),
+            ]);
+        }
     }
 
     /**
@@ -62,6 +49,23 @@ class GenderController extends Controller
      */
     public function destroy(Gender $gender)
     {
-        //
+        try {
+
+            $gender->delete();
+
+            return redirect()->back()->with('message', [
+                'type' => 'success',
+                'title' => Lang::get('Delete success') . '!',
+                'message' => Lang::get('Success in deleting your :name.', ['name' => strtolower(Lang::get('Gender'))]),
+            ]);
+        } catch (\Throwable $th) {
+
+            return back()->with('message', [
+                'type' => 'danger',
+                'autohide' => 'false',
+                'title' => Lang::get('An unexpected error has occurred') . '!',
+                'message' => Lang::get($th->getMessage()) . ' ' . Lang::get('Check your settings and if the problem persists, contact your administrator.'),
+            ]);
+        }
     }
 }

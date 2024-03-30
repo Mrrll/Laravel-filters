@@ -12,13 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('ratingables', function (Blueprint $table) {
-            $table->id();
             $table->unsignedBigInteger('ratingable_id');
             $table->string('ratingable_type');
-            $table->integer('rating');
-            $table->unsignedBigInteger('movie_id');
-            $table->foreign('movie_id')->references('id')->on('movies')->onDelete('cascade');
-            $table->timestamps();
+            $table->unsignedBigInteger('rating_id');
+            $table->foreign('rating_id')->references('id')->on('ratings')->onDelete('cascade');
+            $table->primary(['rating_id', 'ratingable_id']);
         });
     }
 

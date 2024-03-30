@@ -11,8 +11,15 @@ class Comment extends Model
 
     protected $guarded = [];
 
-    public function movies()
+    // Definimos que tiene una relación polimórfica
+    public function commentable()
     {
-        return $this->morphByMany(Movies::class, 'profileable');
+        return $this->morphTo();
     }
+    // Relación uno a muchos (inversa)
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

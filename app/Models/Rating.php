@@ -11,8 +11,14 @@ class Rating extends Model
 
     protected $guarded = [];
 
+    // Relación uno a muchos (inversa)
     public function movies()
     {
-        return $this->morphByMany(Movies::class, 'profileable');
+        return $this->belongsTo(Movie::class);
     }
+    public function user()
+    {
+        return $this->morphByMany(User::class, 'ratingable');
+    }
+
 }

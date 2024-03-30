@@ -9,6 +9,12 @@ class Movie extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
+    protected $casts = [
+        'year' => 'date',
+    ];
+
     public function image()
     {
         return $this->morphMany(Image::class, 'imageable');
@@ -19,14 +25,9 @@ class Movie extends Model
         return $this->belongsTo(Gender::class);
     }
 
-    public function comments()
+    public function ratings()
     {
-        return $this->morphToMany(Comment::class, 'commentable');
-    }
-
-    public function rating()
-    {
-        return $this->morphToMany(Rating::class, 'ratingable');
+        return $this->hasMany(Rating::class);
     }
 
     public function tags()
@@ -34,5 +35,14 @@ class Movie extends Model
         return $this->morphToMany(Tag::class, 'tagable');
     }
 
-
+    // Relación uno a muchos Polimórfica
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+    // Relación uno a muchos (inversa)
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

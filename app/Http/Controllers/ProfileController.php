@@ -13,21 +13,6 @@ use Illuminate\Support\Facades\Lang;
 class ProfileController extends Controller
 {
     use Upload;
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -36,7 +21,7 @@ class ProfileController extends Controller
     {
 
         try {
-            
+
             $user = User::find($request->validated()['user_id']);
 
             $profile = Profile::create($request->safe()->except('avatar', 'user_id'));
@@ -66,22 +51,6 @@ class ProfileController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Profile $profile)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Profile $profile)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateProfileRequest $request, Profile $profile)
@@ -95,7 +64,7 @@ class ProfileController extends Controller
 
                 if ($profile->image->first()) {
 
-                    $delete = ($profile->Del($profile->image->first()->url, 'private') && $profile->image()->delete()) ? true : false;
+                    $delete = ($this->Del($profile->image->first()->url, 'private') && $profile->image()->delete()) ? true : false;
 
                     if ($delete) {
 
@@ -128,20 +97,12 @@ class ProfileController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Profile $profile)
-    {
-        //
-    }
-
     public function ajax(AjaxProfileRequest $request)
     {
         if ($request->ajax()) {
             if (isset($request->deleteavatar)) {
                 $profile = Profile::find($request->deleteavatar);
-                $info = ($profile->Del($profile->image->first()->url, 'private') && $profile->image()->delete()) ? true : false;
+                $info = ($this->Del($profile->image->first()->url, 'private') && $profile->image()->delete()) ? true : false;
             }
             return response()->json($info);
         }

@@ -5,6 +5,8 @@ import "jquery-ui/dist/jquery-ui";
 import "./functions";
 import "./toasts";
 import "./profile";
+import "./tags";
+import "./ratings";
 
 
 // Tooltip

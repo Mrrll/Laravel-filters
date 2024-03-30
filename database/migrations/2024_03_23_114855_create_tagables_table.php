@@ -12,12 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tagables', function (Blueprint $table) {
-            $table->id();
             $table->unsignedBigInteger('tagable_id');
             $table->string('tagable_type');
-            $table->unsignedBigInteger('movie_id');
-            $table->foreign('movie_id')->references('id')->on('movies')->onDelete('cascade');
-            $table->timestamps();
+            $table->unsignedBigInteger('tag_id');
+            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
+            $table->primary(['tag_id', 'tagable_id']);
         });
     }
 

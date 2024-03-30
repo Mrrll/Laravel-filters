@@ -13,6 +13,7 @@ class Tag extends Model
 
     public function movies()
     {
-        return $this->morphByMany(Movies::class, 'profileable');
+        return $this->morphedByMany(Movies::class, 'tagable');
     }
+
 }
