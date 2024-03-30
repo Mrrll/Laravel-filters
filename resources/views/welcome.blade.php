@@ -3,7 +3,10 @@
 @section('title', 'Welcome')
 
 @section('content')
-    <main class="container-fluid align-self-center">
+    <main class="container-fluid">
+        <div class="d-flex align-content-center justify-content-end mt-2">
+            <x-dom.search />
+        </div>
         <div class="grid align-items-center align-self-center" style="--bs-gap: 1rem;">
             @forelse ($movies as $movie)
                 <div class="g-col-12 g-col-md-4 g-col-lg-2">

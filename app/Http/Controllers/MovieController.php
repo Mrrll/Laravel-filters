@@ -9,6 +9,7 @@ use App\Models\Gender;
 use App\Models\Tag;
 use App\Traits\Upload;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Http\Request;
 
 class MovieController extends Controller
 {
@@ -17,9 +18,10 @@ class MovieController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $movies = Movie::orderBy('id')->paginate(6);
+        $movies = isset($request->search) && $request->search != "all" ? Movie::search($request->search)->paginate(6)->withQueryString() : Movie::orderBy('id', 'desc')->paginate(6);
+
         $profile = auth()->user() && auth()->user()->profile->first() ? auth()->user()->profile->first() : null;
         return view('welcome', compact('profile', 'movies'));
     }
@@ -146,7 +148,7 @@ class MovieController extends Controller
                 }
             }
 
-            $movie->update($request->safe()->except(['tags', 'image','user_id']));
+            $movie->update($request->safe()->except(['tags', 'image', 'user_id']));
 
             return redirect()->intended('/')->with('message', [
                 'type' => 'success',

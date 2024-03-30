@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Movie extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $guarded = [];
 
@@ -44,5 +46,15 @@ class Movie extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    protected function searchable(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+
+                return read_json("movie.json", "config");
+            },
+        );
     }
 }
