@@ -411,7 +411,7 @@ php artisan make:component app.movies.movies --view
 
 ### Creamos el archivo filter.js
 
-> [!INFO]
+> [!NOTE]
 > En este proyecto, se ha creado un componente aside lateral para mostrar todos los filtros, nos ha llevado a cambiar varias cosas, como el css de la plantilla y su plantilla con el nuevo componente, también se ha añadido un botón en el componente de búsqueda para mostrar el aside, no va estar reflejado en esta guía, porque creo que son opciones personalizadas que cambiaran en cada proyecto, igualmente los archivos están subidos y les podréis dar un vistazo cuando lo necesitéis.
 
 > Creamos el archivo `filer.js` y lo ubicamos en `resources/js/` lo tenemos que importar en el archivo `app.js` lo abrimos y escribimos:
