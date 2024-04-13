@@ -32,7 +32,7 @@ class RatingController extends Controller
 
                     $rating = $movie->ratings()->create($request->safe()->except('user_id'));
                 }
-
+                
                 $user->rating()->attach($rating);
 
                 $info = [

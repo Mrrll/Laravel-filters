@@ -1,14 +1,13 @@
 <?php
 
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FilterController;
 use App\Http\Controllers\GenderController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RatingController;
-use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\ToastController;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,6 +26,7 @@ require('verify_routes.php');
 require('forgot_password.php');
 
 Route::get('/', [MovieController::class, 'index'])->name('welcome');
+Route::get('filters/ajax', [FilterController::class, 'filter']);
 
 Route::group(
     ['middleware' => ['auth', 'auth.session', 'verified']],
@@ -47,6 +47,8 @@ Route::group(
         Route::resource('tags', TagController::class)->except(['create', 'edit', 'show', 'update'])->middleware('admin');
 
         Route::get('toasts/ajax', [ToastController::class, 'ajax']);
+
+
 
         Route::get('storage/private/{file}', function ($file) {
             $path = storage_path('app/private/' . $file);

@@ -11,6 +11,7 @@
 
 <body class="body">
     <x-layouts.header :profile="isset($profile) && $profile ? $profile : null" />
+    <x-layouts.aside :genders="isset($genders) && $genders ? $genders : null" :tags="isset($tags) && $tags ? $tags : null" :totalmovies="isset($totalMovies) ? $totalMovies : null" :movies="isset($movies) ? $movies : null" />
     @include('messages.toasts')
     @yield('content')
     <x-layouts.footer />

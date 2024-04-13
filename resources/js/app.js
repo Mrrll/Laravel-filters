@@ -7,7 +7,8 @@ import "./toasts";
 import "./profile";
 import "./tags";
 import "./ratings";
-
+import "./aside";
+import "./filter";
 
 // Tooltip
 const tooltipTriggerList = document.querySelectorAll(

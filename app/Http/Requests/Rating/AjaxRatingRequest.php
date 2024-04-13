@@ -26,6 +26,13 @@ class AjaxRatingRequest extends FormRequest
     {
         $rating = Rating::where('movie_id', $this->id)->first();
 
+        if ($rating != null) {
+
+            $this->merge([
+                "rating_id" => $rating->id
+            ]);
+        }
+
         if ($this->up) {
 
             $this->merge([
@@ -56,8 +63,9 @@ class AjaxRatingRequest extends FormRequest
         }
 
         $this->merge([
-            'rating' => gmp_sign((($yes - $no) / count(User::all())) * 5) != -1 && gmp_sign((($yes - $no) / count(User::all())) * 5) != 0 ? (($yes - $no) / count(User::all())) * 5 : 0,
+            'rating' => gmp_sign((($yes - $no) / count(User::all())) * 5) != -1 && gmp_sign((($yes - $no) / count(User::all())) * 5) != 0 ? round((($yes - $no) / count(User::all())), PHP_ROUND_HALF_UP) * 5 : 0,
         ]);
+
     }
     /**
      * Get the validation rules that apply to the request.
@@ -71,7 +79,7 @@ class AjaxRatingRequest extends FormRequest
             "yes" => "integer|nullable",
             "no" => "integer|nullable",
             'rating' => "numeric",
-            'user_id' => ["required", "integer", Rule::unique('ratingables', 'ratingable_id')->where('rating_id', $this->id)]
+            'user_id' => ["required", "integer", Rule::unique('ratingables', 'ratingable_id')->where('rating_id', $this->rating_id)]
         ];
     }
     /**
@@ -88,6 +96,5 @@ class AjaxRatingRequest extends FormRequest
             'title' => Lang::get('Oops') . '!',
             'message' => Lang::get('Warning you have already voted for this :name.', ['name' => strtolower(Lang::get('Movie'))]),
         ]);
-
     }
 }

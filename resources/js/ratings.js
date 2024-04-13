@@ -7,11 +7,13 @@ function likeUp(id) {
             id: id,
             up: true,
         },
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        location.reload();
-    }).done(function (data) {
-        stars(data.movie, data.rating);
-    });
+    })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            location.reload();
+        })
+        .done(function (data) {
+            stars(data.movie, data.rating);
+        });
 }
 window.likeUp = likeUp;
 
@@ -24,11 +26,13 @@ function likeDown(id) {
             id: id,
             down: true,
         },
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        location.reload();
-    }).done(function (data) {
-        stars(data.movie, data.rating);
-    });
+    })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            location.reload();
+        })
+        .done(function (data) {
+            stars(data.movie, data.rating);
+        });
 }
 window.likeDown = likeDown;
 

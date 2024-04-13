@@ -20,10 +20,15 @@ class MovieController extends Controller
      */
     public function index(Request $request)
     {
-        $movies = isset($request->search) && $request->search != "all" ? Movie::search($request->search)->paginate(6)->withQueryString() : Movie::orderBy('id', 'desc')->paginate(6);
+
+        $movies = isset($request->search) && $request->search != "all" ? Movie::search($request->search)->paginate(3)->withQueryString() : Movie::paginate(3);
+        $movies->withPath('/filters/ajax');
+
+        $genders = Gender::all();
+        $tags = Tag::all();
 
         $profile = auth()->user() && auth()->user()->profile->first() ? auth()->user()->profile->first() : null;
-        return view('welcome', compact('profile', 'movies'));
+        return view('welcome', compact('profile', 'movies', 'genders', 'tags'));
     }
 
     /**

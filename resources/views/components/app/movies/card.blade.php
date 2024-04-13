@@ -1,4 +1,4 @@
-<div id="{{ $movie->id }}" class="card" style="height:350.884px">
+<div id="{{ $movie->id }}" class="card m-2" style="height:350.884px; width:275px">
     @if ($movie->image->first())
         <div class="card-img-top card-image"
             style="background:url('{{ asset('storage/' . $movie->image->first()->url) }}')">
@@ -36,7 +36,7 @@
         </div>
     @endif
     <div class="card-body d-flex flex-column pt-0 ">
-        <small class="card-title text-wrap" style="height: 63px">
+        <small class="card-title text-wrap p-1" style="height: 63px">
             <strong>
                 {{ $movie->title }}
             </strong>
@@ -55,7 +55,6 @@
         <p class="card-text text-truncate">
             {{ $movie->description }}
         </p>
-
     </div>
     @auth
         <div class="card-footer d-flex justify-content-between">

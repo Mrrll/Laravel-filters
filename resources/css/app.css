@@ -5,15 +5,28 @@
 }
 .body {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: auto 1fr;
   grid-template-rows: auto 1fr auto;
   grid-template-areas:
-    'header'
-    'main'
-    'footer';
-  min-height: 100vh;
+    'aside header'
+    'aside main '
+    'footer footer';
+  height: 100vh;
 }
-
+header {
+    grid-area: header;
+}
+aside {
+    grid-area: aside;
+    width: 300px;
+    overflow-y: auto;
+}
+main {
+    grid-area: main;
+}
+footer {
+    grid-area: footer;
+}
 .resize-none {
     resize: none;
  }
@@ -22,3 +35,13 @@
     font-size: 0.475rem;
  }
 
+ @media (max-width: 576px) {
+  body {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+  }
+  aside {
+    display:none;
+  }
+}
