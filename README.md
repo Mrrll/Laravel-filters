@@ -153,6 +153,11 @@ trait Searchable
 
                 continue;
             }
+            if (!str_contains($searchable, ':') && !str_contains($searchable, '.')) {
+
+                $builder->where($searchable, "LIKE", "%$search%");
+                continue;
+            }
         }
         return $builder;
     }
